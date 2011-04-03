@@ -172,6 +172,7 @@ struct dlr_storage *dlr_init_oracle(Cfg *cfg);
 struct dlr_storage *dlr_init_pgsql(Cfg *cfg);
 struct dlr_storage *dlr_init_mssql(Cfg *cfg);
 struct dlr_storage *dlr_init_sqlite3(Cfg *cfg);
+struct dlr_storage *dlr_init_mongodb(Cfg *cfg);
 
 
 #endif /* DLR_P_H */

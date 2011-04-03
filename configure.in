@@ -1207,6 +1207,30 @@ fi
   AC_MSG_RESULT(disabled)
 ])
 
+dnl Implement the --with-mongodb option. This will set HAVE_MONGODB in gw-config.h
+dnl accordingly and enable the usage of the libsqlite3 routines.
+
+AC_MSG_CHECKING([whether to compile with MongoDB support])
+AC_ARG_WITH(mongodb,
+[  --with-mongodb          enable MongoDB storage @<:@disabled@:>@], [
+if test "$withval" != yes; then
+    AC_MSG_RESULT(disabled)
+else
+    AC_MSG_RESULT(searching)
+    AC_CHECK_HEADERS(mongo/mongo.h)
+    LIBS="$LIBS -L/usr/local/lib"
+    AC_CHECK_LIB(mongoc, mongo_connect,
+      [LIBS="$LIBS -lmongoc"
+       AC_DEFINE(HAVE_MONGODB)
+       MONGODB="yes"],
+      [AC_MSG_ERROR([Unable to find MongoDB client libraries])]
+    )
+fi
+],[
+  AC_MSG_RESULT(disabled)
+])
+
+
 dnl Checking for FreeTDS Ct-Lib support
 AC_MSG_CHECKING([whether to compile with FreeTDS Ct-Lib support])
 AC_ARG_WITH(mssql,

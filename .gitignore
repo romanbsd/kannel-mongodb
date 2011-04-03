@@ -1,0 +1,10 @@
+.depend
+*.a
+*.o
+.svn
+Makefile
+gw-config
+gw-config.h
+config.log
+config.nice
+config.status

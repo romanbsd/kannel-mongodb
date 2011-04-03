@@ -606,6 +606,15 @@ MULTI_GROUP(sqlite3-connection,
     OCTSTR(lock-timeout)
 )
 
+MULTI_GROUP(mongodb-connection,
+    OCTSTR(id)
+    OCTSTR(host)
+    OCTSTR(port)
+    OCTSTR(username)
+    OCTSTR(password)
+    OCTSTR(database)
+    OCTSTR(max-connections)
+)
  
 SINGLE_GROUP(dlr-db,
     OCTSTR(id)
@@ -647,7 +656,3 @@ MULTI_GROUP(smpp-tlv,
 #undef OCTSTR
 #undef SINGLE_GROUP
 #undef MULTI_GROUP
-
-
-
-

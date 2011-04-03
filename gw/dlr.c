@@ -262,6 +262,8 @@ void dlr_init(Cfg* cfg)
         handles = dlr_init_mssql(cfg);
     } else if (octstr_compare(dlr_type, octstr_imm("sqlite3")) == 0) {
         handles = dlr_init_sqlite3(cfg);
+    } else if (octstr_compare(dlr_type, octstr_imm("mongodb")) == 0) {
+        handles = dlr_init_mongodb(cfg);
     }
 
     /*

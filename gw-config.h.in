@@ -227,6 +227,9 @@
 /* Define if you have and want to use the SQLite3 database library (-lsqlite3) */
 #undef HAVE_SQLITE3
 
+/* Define if you have and want to use the MongoDB database library (-lmongoc) */
+#undef HAVE_MONGODB
+
 /* Define version of used libSDB */
 #undef LIBSDB_VERSION
 
