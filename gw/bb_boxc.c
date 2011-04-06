@@ -117,6 +117,8 @@ static int smsbox_port_ssl;
 static long	wapbox_port;
 static int wapbox_port_ssl;
 
+static Octstr *smsbox_interface = NULL;
+
 /* max pending messages on the line to smsbox */
 static long smsbox_max_pending;
 
@@ -148,6 +150,10 @@ typedef struct _boxc {
     volatile int routable;
 } Boxc;
 
+typedef struct _conn_params {
+    int port;
+    Octstr *interface;
+} ConnParams;
 
 /* forward declaration */
 static void sms_to_smsboxes(void *arg);
@@ -993,17 +999,17 @@ static void wait_for_connections(int fd, void (*function) (void *arg),
 static void smsboxc_run(void *arg)
 {
     int fd;
-    int port;
+    ConnParams *params = (ConnParams*)arg;
 
     gwlist_add_producer(flow_threads);
     gwthread_wakeup(MAIN_THREAD_ID);
-    port = (int) *((long *)arg);
 
-    fd = make_server_socket(port, NULL);
-    /* XXX add interface_name if required */
+    fd = make_server_socket(params->port, params->interface ? octstr_get_cstr(params->interface) : NULL);
+    octstr_destroy(params->interface);
+    gw_free(params);
 
     if (fd < 0) {
-        panic(0, "Could not open smsbox port %d", port);
+        panic(0, "Could not open smsbox port %d", params->port);
     }
 
     /*
@@ -1222,6 +1228,8 @@ int smsbox_start(Cfg *cfg)
     if (smsbox_port_ssl)
         debug("bb", 0, "smsbox connection module is SSL-enabled");
 
+    smsbox_interface = cfg_get(grp, octstr_imm("smsbox-interface"));
+
     if (cfg_get_integer(&smsbox_max_pending, grp, octstr_imm("smsbox-max-pending")) == -1) {
         smsbox_max_pending = SMSBOX_MAX_PENDING;
         info(0, "BOXC: 'smsbox-max-pending' not set, using default (%ld).", smsbox_max_pending);
@@ -1258,7 +1266,11 @@ int smsbox_start(Cfg *cfg)
     if ((sms_dequeue_thread = gwthread_create(sms_to_smsboxes, NULL)) == -1)
  	    panic(0, "Failed to start a new thread for smsbox routing");
 
-    if (gwthread_create(smsboxc_run, &smsbox_port) == -1)
+    ConnParams *params = gw_malloc(sizeof(ConnParams));
+    gw_assert(params != NULL);
+    params->port = smsbox_port;
+    params->interface = smsbox_interface;
+    if (gwthread_create(smsboxc_run, params) == -1)
 	    panic(0, "Failed to start a new thread for smsbox connections");
 
     return 0;
