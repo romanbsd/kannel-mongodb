@@ -150,10 +150,10 @@ typedef struct _boxc {
     volatile int routable;
 } Boxc;
 
-typedef struct _conn_params {
+struct ConnParams {
     int port;
     Octstr *interface;
-} ConnParams;
+};
 
 /* forward declaration */
 static void sms_to_smsboxes(void *arg);
@@ -999,7 +999,7 @@ static void wait_for_connections(int fd, void (*function) (void *arg),
 static void smsboxc_run(void *arg)
 {
     int fd;
-    ConnParams *params = (ConnParams*)arg;
+    struct ConnParams *params = (struct ConnParams*)arg;
 
     gwlist_add_producer(flow_threads);
     gwthread_wakeup(MAIN_THREAD_ID);
@@ -1266,7 +1266,7 @@ int smsbox_start(Cfg *cfg)
     if ((sms_dequeue_thread = gwthread_create(sms_to_smsboxes, NULL)) == -1)
  	    panic(0, "Failed to start a new thread for smsbox routing");
 
-    ConnParams *params = gw_malloc(sizeof(ConnParams));
+    struct ConnParams *params = gw_malloc(sizeof(struct ConnParams));
     gw_assert(params != NULL);
     params->port = smsbox_port;
     params->interface = smsbox_interface;
