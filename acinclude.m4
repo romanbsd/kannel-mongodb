@@ -96,6 +96,14 @@ AC_DEFUN([AC_SVN_REVISION],
   fi
 ])
 
+dnl Check which Git revision it is
+AC_DEFUN([AC_GIT_REVISION],
+[
+    if test -d .git
+    then
+        $1=`git log -1 | awk '{ if(/^commit/) { print substr($ 2, 0, 8) }}'`
+    fi
+])
 
 dnl Available from the GNU Autoconf Macro Archive at:
 dnl http://www.gnu.org/software/ac-archive/htmldoc/ac_caolan_func_which_gethostbyname_r.html

@@ -2484,6 +2484,18 @@ $as_echo_n "checking svn checkout revision... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SVN_REVISION" >&5
 $as_echo "$SVN_REVISION" >&6; }
   VERSION="$VERSION-r$SVN_REVISION"
+elif test "x$VERSION" = "xgit"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking git checkout revision" >&5
+$as_echo_n "checking git checkout revision... " >&6; }
+
+    if test -d .git
+    then
+        GIT_REVISION=`git log -1 | awk '{ if(/^commit/) { print substr($ 2, 0, 8) }}'`
+    fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GIT_REVISION" >&5
+$as_echo "$GIT_REVISION" >&6; }
+  VERSION="$VERSION-$GIT_REVISION"
 fi
 cat >>confdefs.h <<_ACEOF
 #define GW_NAME "Kannel"
