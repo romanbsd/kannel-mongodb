@@ -114,11 +114,9 @@ static Dict *smsbox_by_smsc_receiver;
 
 static long	smsbox_port;
 static int smsbox_port_ssl;
-static Octstr *smsbox_interface;
+static Octstr *smsbox_interface = NULL;
 static long	wapbox_port;
 static int wapbox_port_ssl;
-
-static Octstr *smsbox_interface = NULL;
 
 /* max pending messages on the line to smsbox */
 static long smsbox_max_pending;
