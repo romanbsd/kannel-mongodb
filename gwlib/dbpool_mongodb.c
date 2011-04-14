@@ -34,7 +34,6 @@ static void *mongodb_open_conn(const DBConf *db_conf)
 {
     MongoDBConf *conf = db_conf->mongodb;
     mongo_connection *conn; /* ptr */
-    mongo_connection_options opts[1];
     mongo_conn_return status;
     mongo_conf = conf;
 /*
@@ -45,11 +44,9 @@ static void *mongodb_open_conn(const DBConf *db_conf)
     conn = gw_malloc(sizeof(mongo_connection));
     gw_assert(conn != NULL);
 
-    strcpy(opts->host, octstr_get_cstr(conf->host));
-    opts->port = conf->port;
-    info(0, "MongoDB: connecting to %s:%u", opts->host, opts->port);
+    info(0, "MongoDB: connecting to %s:%lu", octstr_get_cstr(conf->host), conf->port);
 
-    status = mongo_connect(conn, opts);
+    status = mongo_connect(conn, octstr_get_cstr(conf->host), conf->port);
 
     switch (status) {
     case mongo_conn_success:
@@ -67,6 +64,12 @@ static void *mongodb_open_conn(const DBConf *db_conf)
     case mongo_conn_not_master:
         error(0, "MongoDB: not master");
         goto failed;
+    case mongo_conn_bad_set_name:
+	error(0, "MongoDB: bad set name");
+	goto failed;
+    case mongo_conn_cannot_find_primary:
+	error(0, "MongoDB: cannot find primary");
+	goto failed;
     }
 
 /*
