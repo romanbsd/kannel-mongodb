@@ -55,6 +55,35 @@ static void mongodb_error(const char *method, mongo_exception_type type)
     error(0, "MongoDB: %s: %s", method, type == MONGO_EXCEPT_NETWORK ? "network error" : "error in find");
 }
 
+/* Create index on smsc and ts fields, as these are used for retrieving the DLR */
+static void dlr_mongodb_ensure_index(void)
+{
+    DBPoolConn *pconn;
+    mongo_connection *conn = NULL;
+    bson_buffer bb;
+    bson key;
+
+    pconn = dbpool_conn_consume(pool);
+    if (pconn == NULL) {
+        return;
+    }
+    conn = (mongo_connection*)pconn->conn;
+
+    bson_buffer_init(&bb);
+    bson_append_int(&bb, octstr_get_cstr(fields->field_smsc), 1);
+    bson_append_int(&bb, octstr_get_cstr(fields->field_ts), 1);
+    bson_from_buffer(&key, &bb);
+
+    MONGO_TRY {
+        mongo_create_index(conn, mongodb_namespace, &key, 0, NULL);
+    } MONGO_CATCH {
+        mongodb_error("dlr_mongodb_ensure_index", conn->exception.type);
+    }
+
+    dbpool_conn_produce(pconn);
+    bson_destroy(&key);
+}
+
 static void dlr_mongodb_shutdown()
 {
     dbpool_destroy(pool);
@@ -398,6 +427,8 @@ struct dlr_storage *dlr_init_mongodb(Cfg *cfg)
     if (dbpool_conn_count(pool) == 0) {
         panic(0, "DLR: MongoDB: Could not establish connection(s).");
     }
+
+    dlr_mongodb_ensure_index();
 
     octstr_destroy(mongodb_id);
 
