@@ -257,7 +257,7 @@ AM_ICONV
 
 dnl Checks for library functions.
 
-AC_CHECK_FUNCS(gettimeofday select socket strdup getopt_long localtime_r gmtime_r backtrace srandom)
+AC_CHECK_FUNCS(gettimeofday select socket strdup getopt_long localtime_r gmtime_r backtrace srandom initgroups strtoll strtoq)
 AC_CHECK_FUNC(getopt, [], [AC_LIBOBJ([utils/attgetopt])])
 
 dnl Check if we have reentrant gethostbyname and which one
@@ -347,7 +347,15 @@ dnl Checking pthread_spin support
 dnl
 AC_MSG_CHECKING([for pthread_spinlock support])
 AC_TRY_COMPILE([#include <pthread.h>], [
+#ifdef __INTERIX
+/*
+ * interix has experimental spinlock support and this doesn't work very well
+ * therefore disable it for now
+ */
+pthread_spinlock_t_failed lock;
+#else
 pthread_spinlock_t lock;
+#endif
 pthread_spin_init(&lock, 0);
 pthread_spin_lock(&lock);
 pthread_spin_unlock(&lock);
