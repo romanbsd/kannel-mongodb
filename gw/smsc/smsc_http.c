@@ -142,6 +142,7 @@ typedef struct fieldmap {
     Octstr *service;
     Octstr *account;
     Octstr *binfo;
+    Octstr *meta_data;
     Octstr *dlr_mask;
     Octstr *dlr_url;
     Octstr *dlr_mid;
@@ -217,6 +218,7 @@ static void fieldmap_destroy(FieldMap *fieldmap)
     octstr_destroy(fieldmap->service);
     octstr_destroy(fieldmap->account);
     octstr_destroy(fieldmap->binfo);
+    octstr_destroy(fieldmap->meta_data);
     octstr_destroy(fieldmap->dlr_mask);
     octstr_destroy(fieldmap->dlr_url);
     octstr_destroy(fieldmap->dlr_mid);
@@ -1013,7 +1015,7 @@ static void clickatell_receive_sms(SMSCConn *conn, HTTPClient *client,
     } else if (apimsgid == NULL || status == NULL || timestamp == NULL || dest == NULL) {
         error(0, "HTTP[%s]: Insufficient args.",
               octstr_get_cstr(conn->id));
-        httpstatus = HTTP_BAD_REQUEST;
+        httpstatus = HTTP_OK;
         retmsg = octstr_create("Insufficient arguments, rejected.");
     } else {
 	switch (atoi(octstr_get_cstr(status))) {
@@ -1729,6 +1731,9 @@ static FieldMap *generic_get_field_map(CfgGroup *grp)
     fm->foreign_id = cfg_get(grp, octstr_imm("generic-param-foreign-id"));
     if (fm->foreign_id == NULL)
         fm->foreign_id = octstr_create("foreign-id");
+    fm->meta_data = cfg_get(grp, octstr_imm("generic-param-meta-data"));
+            if (fm->meta_data == NULL)
+                fm->meta_data = octstr_create("meta-data");
     fm->message_sent = cfg_get(grp, octstr_imm("generic-message-sent"));
     if (fm->message_sent == NULL)
         fm->message_sent = octstr_create("Sent");
@@ -1748,7 +1753,7 @@ static void generic_receive_sms(SMSCConn *conn, HTTPClient *client,
 {
     ConnData *conndata = conn->data;
     FieldMap *fm = conndata->fieldmap;
-    Octstr *user, *pass, *from, *to, *text, *udh, *account, *binfo;
+    Octstr *user, *pass, *from, *to, *text, *udh, *account, *binfo, *meta_data;
     Octstr *dlrurl, *dlrmid;
     Octstr *tmp_string, *retmsg;
     int	mclass, mwi, coding, validity, deferred, dlrmask;
@@ -1867,6 +1872,7 @@ static void generic_receive_sms(SMSCConn *conn, HTTPClient *client,
         }
         account = http_cgi_variable(cgivars, octstr_get_cstr(fm->account));
         binfo = http_cgi_variable(cgivars, octstr_get_cstr(fm->binfo));
+        meta_data = http_cgi_variable(cgivars, octstr_get_cstr(fm->meta_data));
 
         debug("smsc.http.generic", 0, "HTTP[%s]: Constructing new SMS",
               octstr_get_cstr(conn->id));
@@ -1887,6 +1893,7 @@ static void generic_receive_sms(SMSCConn *conn, HTTPClient *client,
         msg->sms.time = time(NULL);
         msg->sms.account = octstr_duplicate(account);
         msg->sms.binfo = octstr_duplicate(binfo);
+        msg->sms.meta_data = octstr_duplicate(meta_data);
         Msg *resp = msg_duplicate(msg);
         ret = bb_smscconn_receive(conn, msg);
         if (ret == -1) {
@@ -2071,6 +2078,7 @@ int smsc_http_create(SMSCConn *conn, CfgGroup *cfg)
         return -1;
     }
     conndata = gw_malloc(sizeof(ConnData));
+    conndata->port = portno;
     conndata->http_ref = NULL;
     conndata->success_regex = 
         conndata->permfail_regex = conndata->tempfail_regex = NULL;
