@@ -630,6 +630,7 @@ SINGLE_GROUP(dlr-db,
     OCTSTR(field-mask)
     OCTSTR(field-status)
     OCTSTR(field-boxc-id)
+    OCTSTR(field-account)
 )
 
 

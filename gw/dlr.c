@@ -130,6 +130,7 @@ struct dlr_entry *dlr_entry_duplicate(const struct dlr_entry *dlr)
     ret->service = octstr_duplicate(dlr->service);
     ret->url = octstr_duplicate(dlr->url);
     ret->boxc_id = octstr_duplicate(dlr->boxc_id);
+    ret->account = octstr_duplicate(dlr->account);
     ret->mask = dlr->mask;
 
     return ret;
@@ -153,6 +154,7 @@ void dlr_entry_destroy(struct dlr_entry *dlr)
     O_DELETE(dlr->service);
     O_DELETE(dlr->url);
     O_DELETE(dlr->boxc_id);
+    O_DELETE(dlr->account);
 
 #undef O_DELETE
 
@@ -193,6 +195,9 @@ struct dlr_db_fields *dlr_db_fields_create(CfgGroup *grp)
    	    panic(0, "DLR: DB: directive 'field-status' is not specified!");
     if (!(ret->field_boxc = cfg_get(grp, octstr_imm("field-boxc-id"))))
    	    panic(0, "DLR: DB: directive 'field-boxc-id' is not specified!");
+    if (!(ret->field_account = cfg_get(grp, octstr_imm("field-account")))) {
+        warning(0, "DLR: DB: directive 'field-account' is not specified!");
+    }
 
     return ret;
 }
@@ -215,6 +220,7 @@ void dlr_db_fields_destroy(struct dlr_db_fields *fields)
     O_DELETE(fields->field_mask);
     O_DELETE(fields->field_status);
     O_DELETE(fields->field_boxc);
+    O_DELETE(fields->field_account);
 
 #undef O_DELETE
 
@@ -360,12 +366,14 @@ void dlr_add(const Octstr *smsc, const Octstr *ts, Msg *msg)
     dlr->service = (msg->sms.service ? octstr_duplicate(msg->sms.service) : octstr_create(""));
     dlr->url = (msg->sms.dlr_url ? octstr_duplicate(msg->sms.dlr_url) : octstr_create(""));
     dlr->boxc_id = (msg->sms.boxc_id ? octstr_duplicate(msg->sms.boxc_id) : octstr_create(""));
+    dlr->account = (msg->sms.account ? octstr_duplicate(msg->sms.account) : octstr_create(""));
     dlr->mask = msg->sms.dlr_mask;
 
-    debug("dlr.dlr", 0, "DLR[%s]: Adding DLR smsc=%s, ts=%s, src=%s, dst=%s, mask=%d, boxc=%s",
+    debug("dlr.dlr", 0, "DLR[%s]: Adding DLR smsc=%s, ts=%s, src=%s, dst=%s, account=%s, mask=%d, boxc=%s",
           dlr_type(), octstr_get_cstr(dlr->smsc), octstr_get_cstr(dlr->timestamp),
-          octstr_get_cstr(dlr->source), octstr_get_cstr(dlr->destination), dlr->mask, octstr_get_cstr(dlr->boxc_id));
-	
+          octstr_get_cstr(dlr->source), octstr_get_cstr(dlr->destination), octstr_get_cstr(dlr->account),
+          dlr->mask, octstr_get_cstr(dlr->boxc_id));
+
     /* call registered function */
     handles->dlr_add(dlr);
 }
@@ -418,6 +426,7 @@ Msg *dlr_find(const Octstr *smsc, const Octstr *ts, const Octstr *dst, int typ, 
         O_SET(msg->sms.smsc_id, dlr->smsc);
         O_SET(msg->sms.receiver, dlr->destination);
         O_SET(msg->sms.sender, dlr->source);
+        O_SET(msg->sms.account, dlr->account);
         /* if dlr_url was present, recode it here again */
         O_SET(msg->sms.dlr_url, dlr->url);
         /* add the foreign_id */
@@ -500,6 +509,7 @@ Msg* create_dlr_from_msg(const Octstr *smsc, const Msg *msg, const Octstr *reply
     dlrmsg->sms.dlr_url = octstr_duplicate(msg->sms.dlr_url);
     dlrmsg->sms.msgdata = octstr_duplicate(reply);
     dlrmsg->sms.boxc_id = octstr_duplicate(msg->sms.boxc_id);
+    dlrmsg->sms.account = octstr_duplicate(msg->sms.account);
     dlrmsg->sms.foreign_id = octstr_duplicate(msg->sms.foreign_id);
     time(&dlrmsg->sms.time);
 

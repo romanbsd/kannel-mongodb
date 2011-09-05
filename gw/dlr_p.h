@@ -83,6 +83,7 @@ struct dlr_entry {
    Octstr *service;
    Octstr *url;
    Octstr *boxc_id;
+   Octstr *account;
    int mask;
 };
 
@@ -156,6 +157,7 @@ struct dlr_db_fields {
     Octstr *field_mask;
     Octstr *field_status;
     Octstr *field_boxc;
+    Octstr *field_account;
 };
 
 struct dlr_db_fields *dlr_db_fields_create(CfgGroup *grp);
