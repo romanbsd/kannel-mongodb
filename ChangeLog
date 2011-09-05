@@ -1,3 +1,43 @@
+2011-08-19 Alexander Malysh <amalysh at kannel.org>
+    * doc/userguide/userguide.xml: fixed userguide compilation.
+
+2011-08-19 Alexander Malysh <amalysh at kannel.org>
+    * doc/userguide/userguide.xml: another try to fixed prev. commit.
+      Thanks to Nikos Balkanas <nbalkanas at gmail.com>
+
+2011-08-17 Alexander Malysh <amalysh at kannel.org>
+    * gw/dlr_pgsql.c: fixed panic when DB is not available.
+      Thanks to Alan McNatty <alan at catalyst.net.nz>
+
+2011-08-17 Alexander Malysh <amalysh at kannel.org>
+    * doc/userguide/userguide.xml: fixed prev. commit.
+      Thanks to Nikos Balkanas <nbalkanas at gmail.com>
+
+2011-08-03 Alexander Malysh <amalysh at kannel.org>
+    * doc/userguide/userguide.xml: update to wtls section with
+      available ciphers and howto create SSL-Cert.
+      Thanks to Nikos Balkanas <nbalkanas at gmail.com>
+
+2011-08-03 Alexander Malysh <amalysh at kannel.org>
+    * wap/wtls_statesupport.c: applied patch that fixes a problem
+      with debug log output when large MAC names are used.
+      Thanks to Armindo Antunes <armindo.antunes at gmail.com>
+
+2011-07-23 Alexander Malysh <amalysh at kannel.org>
+    * gwlib/log.c: Fixed compilation issue when no syslog defined.
+
+2011-07-12 Vincent CHAVANIS <v.chavanis at telemaque.fr>
+    * gw/smsc/smsc_at.[ch]: added support for throughput in AT smsc
+
+2011-06-13 Alexander Malysh <amalysh at kannel.org>
+    * gw/dlr_oracle.c: fixed sql query syntax error. This fixes #607.
+      Thanks to Heiki Pikker for this patch.
+
+2011-05-20  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_loopback.c: after switching the MT to an MO message
+      we want to clean up any MT specific values, that are still present
+      due to the duplication of the message. This is semantically cleaner.
+
 2011-05-11 Alexander Malysh <amalysh at kannel.org>
     * configure.in: added MacOSX10.6.sdk 
 
