@@ -121,6 +121,7 @@ static void dlr_mongodb_add(struct dlr_entry *entry)
     bson_append_string(&buf, octstr_get_cstr(fields->field_serv), octstr_get_cstr(entry->service));
     bson_append_string(&buf, octstr_get_cstr(fields->field_url), octstr_get_cstr(entry->url));
     bson_append_string(&buf, octstr_get_cstr(fields->field_account), octstr_get_cstr(entry->account));
+    bson_append_string(&buf, octstr_get_cstr(fields->field_binfo), octstr_get_cstr(entry->binfo));
     bson_append_int(&buf, octstr_get_cstr(fields->field_mask), entry->mask);
     bson_append_string(&buf, octstr_get_cstr(fields->field_boxc), octstr_get_cstr(entry->boxc_id));
     bson_append_int(&buf, octstr_get_cstr(fields->field_status), 0);
@@ -201,6 +202,9 @@ static struct dlr_entry* dlr_mongodb_get(const Octstr *smsc, const Octstr *ts, c
 
         bson_find(&it, &obj, octstr_get_cstr(fields->field_account));
         res->account = octstr_create(bson_iterator_string(&it));
+
+        bson_find(&it, &obj, octstr_get_cstr(fields->field_binfo));
+        res->binfo = octstr_create(bson_iterator_string(&it));
     }
 
     dbpool_conn_produce(pconn);

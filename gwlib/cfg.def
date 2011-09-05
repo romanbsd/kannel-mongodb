@@ -631,6 +631,7 @@ SINGLE_GROUP(dlr-db,
     OCTSTR(field-status)
     OCTSTR(field-boxc-id)
     OCTSTR(field-account)
+    OCTSTR(field-binfo)
 )
 
 
