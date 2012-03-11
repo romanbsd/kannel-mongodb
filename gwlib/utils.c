@@ -80,7 +80,15 @@
 #include <grp.h>
 #include <libgen.h>
 
+#if HAVE_UCONTEXT
+#include <sys/ucontext.h>
+#endif
+
 #include "gwlib.h"
+
+#if HAVE_BACKTRACE
+#include <execinfo.h> /*backtrace */
+#endif
 
 /* Headers required for the version dump. */
 #if defined(HAVE_LIBSSL) || defined(HAVE_WTLS_OPENSSL) 
@@ -103,6 +111,8 @@
 
 /* pid of child process when parachute is used */
 static pid_t child_pid = -1;
+/* pid of pid file owner */
+static pid_t pidfile_owner_pid = -1;
 /* saved child signal handlers */
 static struct sigaction child_actions[32];
 /* just a flag that child signal handlers are stored */
@@ -110,6 +120,35 @@ static int child_actions_init = 0;
 /* our pid file name */
 static char *pid_file = NULL;
 static volatile sig_atomic_t parachute_shutdown = 0;
+
+
+static void fatal_handler(int sig, siginfo_t *info, void *secret)
+{
+#ifdef HAVE_BACKTRACE
+    void *trace[50];
+#ifdef REG_EIP
+    ucontext_t *uc = (ucontext_t*)secret;
+#endif
+    size_t size;
+#endif    
+    struct sigaction act;
+    
+    act.sa_handler = SIG_DFL;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    sigaction(sig, &act, NULL);
+    
+#ifdef HAVE_BACKTRACE
+    size = backtrace(trace, sizeof(trace) / sizeof(void*));
+#ifdef REG_EIP
+    /* overwrite sigaction with caller's address */
+    trace[1] = (void *) uc->uc_mcontext.gregs[REG_EIP];
+#endif
+    gw_backtrace(trace, size, 0);
+#endif
+    
+    raise(sig);
+}
 
 
 static void parachute_sig_handler(int signum)
@@ -165,6 +204,7 @@ static void parachute_init_signals(int child)
         sigaction(SIGTTIN, &sa, NULL);
         sigaction(SIGTSTP, &sa, NULL);
         child_actions_init = 1;
+        init_fatal_signals();
     }
     else
         panic(0, "Child process signal handlers not initialized before.");
@@ -183,7 +223,8 @@ static int is_executable(const char *filename)
         return 0;
     }
     /* others has exec permission */
-    if (S_IXOTH & buf.st_mode) return 1;
+    if (S_IXOTH & buf.st_mode)
+        return 1;
     /* group has exec permission */
     if ((S_IXGRP & buf.st_mode) && buf.st_gid == getgid())
         return 1;
@@ -350,7 +391,7 @@ static void write_pid_file(void)
     if (!file)
         panic(errno, "Could not open file-stream `%s'", pid_file);
 
-    fprintf(file, "%ld\n", (long) getpid());
+    fprintf(file, "%ld\n", (long) (pidfile_owner_pid = getpid()));
     fclose(file);
 }
 
@@ -359,12 +400,21 @@ static void remove_pid_file(void)
     if (!pid_file)
         return;
 
-    /* ensure we don't called from child process */
-    if (child_pid == 0)
+    /* ensure that only pidfile owner can remove it */
+    if (pidfile_owner_pid != getpid())
         return;
 
-    if (-1 == unlink(pid_file))
+    if (-1 == unlink(pid_file)) {
+        int initdone = gwlib_initialized();
+        /* we are called at exit so gwlib may be shutdown already, init again */
+        if (!initdone) {
+            gwlib_init();
+            log_set_syslog("kannel", 0);
+        }
         error(errno, "Could not unlink pid-file `%s'", pid_file);
+        if (!initdone)
+            gwlib_shutdown();
+    }
 }
 
 
@@ -452,6 +502,18 @@ Octet reverse_octet(Octet source)
     dest += (source & 128) >>7;
     
     return dest;
+}
+
+
+void init_fatal_signals()
+{
+    /* install fatal signal handler */
+    struct sigaction act;
+    /* set segfault handler */
+    sigemptyset(&act.sa_mask);
+    act.sa_sigaction = fatal_handler;
+    act.sa_flags = SA_SIGINFO;
+    sigaction(SIGSEGV, &act, NULL);
 }
 
 
@@ -656,6 +718,9 @@ int get_and_set_debugs(int argc, char **argv,
     if (debug_places != NULL)
 	    info(0, "Debug places: `%s'", debug_places);
 
+
+    init_fatal_signals();
+    
     return i;
 }
 

@@ -2478,6 +2478,11 @@ $as_echo_n "checking svn checkout revision... " >&6; }
     revision=`svnversion .`
     test -z "$revision" && revision="unknown"
     SVN_REVISION="$revision"
+  elif test -d ".git"
+  then
+    sha1=$(git rev-parse --short HEAD)
+    mod=$(git status | grep "modified:\|added:\|deleted:" -q && echo "M")
+    SVN_REVISION="$sha1$mod"
   fi
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SVN_REVISION" >&5
@@ -4152,7 +4157,7 @@ case "$host" in
     # location libs and includes.
     found=0
     SDK=""
-    for loc in "MacOSX10.6.sdk" "MacOSX10.5.sdk" "MacOSX10.4u.sdk" "MacOSX10.4.0.sdk" "MacOSX10.3.9.sdk" \
+    for loc in "MacOSX10.7.sdk" "MacOSX10.6.sdk" "MacOSX10.5.sdk" "MacOSX10.4u.sdk" "MacOSX10.4.0.sdk" "MacOSX10.3.9.sdk" \
 	           "MacOSX10.3.0.sdk" "MacOSX10.2.8.sdk" "MacOSX10.1.5.sdk"
   	do
       if test "$found" = "0" ; then
@@ -5508,6 +5513,23 @@ if test "x$ac_cv_header_net_if_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_NET_IF_H 1
 _ACEOF
+
+fi
+
+done
+
+for ac_header in sys/ucontext.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/ucontext.h" "ac_cv_header_sys_ucontext_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_ucontext_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_UCONTEXT_H 1
+_ACEOF
+ $as_echo "#define HAVE_UCONTEXT 1" >>confdefs.h
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: System lacks ucontext.h - user context support" >&5
+$as_echo "$as_me: WARNING: System lacks ucontext.h - user context support" >&2;}
 
 fi
 

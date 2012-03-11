@@ -1,3 +1,142 @@
+2012-03-08  Stipe Tolj  <stolj at kannel.org>
+    * gw/bb_boxc.c: fix MO routing logic implied by 'smsbox-route' context. We
+      have been passing MOs that had a strict smsbox-id routing decission to
+      an random not-identified smsbox if there was no smsbox-id connection.
+      This breaks the MO routing criteria. Now we obey the smsbox-id routing
+      decission and re-inject the MO message rather back to the main queue.
+      This patchset fixes bug #633.
+      
+2012-03-07 Alexander Malysh <amalysh at kannel.org>
+    * contrib/kannel-monitor/index.php, contrib/kannel-monitor/xmltoarray.php:
+      This patch adds replaces the <? to <?php to fully support when open tags
+      are not configured. This patch fixes #250.
+      Thanks to Renato Jop for this patch. 
+
+2012-02-23 Alexander Malysh <amalysh at kannel.org>
+    * acinclude.m4, configure: added GIT version check
+
+2012-02-21 Alexander Malysh <amalysh at kannel.org>
+    * test/test_http_server.c: allow define custom response headers.
+
+2012-02-15  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_http.c: inject 'text' and username variables to DLR message
+      passed back to a smsbox connection. This harmonizes the behaviour to be
+      similar as for the SMPP client module part.
+      
+2012-02-08 Alexander Malysh <amalysh at kannel.org>
+    * wap/wtls_pdu.c: fixed possible segfault.
+      Thanks to Armindo Antunes <armindo.antunes at gmail.com> for this patch.
+
+2012-02-02 Alexander Malysh <amalysh at kannel.org>
+    * gw/bb_smscconn.c: fixed bb_smscconn_send_failed for DLRs.
+
+2012-01-25  Stipe Tolj  <stolj at kannel.org>
+    * configure: fixing autoconf generated script from Andreas, which breaks
+      the 'config.nice' re-configuration handling. Seems to be the autoconf
+      version related. NLC.
+
+2012-01-24 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsc/smsc_smpp.c: fixed compiler warnings
+
+2012-01-16  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_[http|smpp].c: again, minor source code changes to follow
+      our doc/CodingStyle rules! NLC.
+      
+2012-01-12 Andreas Fink <afink at smsrelay.com>
+    * gw/smsc/smsc_smpp.c: proper handling of network_error_code. Kannel assumed
+      it was the same 3 characters as in the delivery report string but 
+      spec says something else so its properly converted now. 
+      Whitespace changes (removed tabs).
+    * ChangeLog. Corrected Stipe's year
+
+2012-01-07  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_http.c: slight code change from Andrea's previous commit. We
+      don't need to allocate more variables on the stack as we have a temp 
+      Ocstr* already. NLC.
+      
+2012-01-07 Andreas Fink <afink at smsrelay.com> 
+    * gw/smsc/smsc_http.c: added new parameter for DLR named dlr-err which can
+      contain a network error code which is parsed the same way the err: field
+      in SMPP delivery reports are parsed.
+    * configure[.in]: added support for MacOS X 10.7 Lion SDK.
+
+2011-11-09 Alexander Malysh <amalysh at kannel.org>
+    * gwlib/octstr.c, gwlib/octstr.c.debug: fixed segfault on some systems where
+      long overflow occurs. This fixes #623.
+      Thanks to Lutalo Joseph Willrich for patch.
+
+2011-10-31 Alexander Malysh <amalysh at kannel.org>
+    * reverted commited that moved .foreign_id injection from dlr_add() because
+      it breaks other SMSC module as SMPP.
+
+2011-10-26 Alexander Malysh <amalysh at kannel.org>
+    * wmlscript/wsgram.y: fixed compilation error.
+
+2011-10-13  Stipe Tolj  <stolj at kannel.org>
+    * configure[.in]: need to test for <sys/ucontext.h>, tbough it is defined 
+      in IEEE Std 1003.1-2001/Cor 2-2004 it is not fully portable, i.e. OpenBSD
+      and Cygwin lack the functionality.
+    * gw-config.h.in: add HAVE_UCONTEXT macro.
+    * gw/shared.c: add header include to fix implicite declaration warning. NLC.
+    * gwlib/utils.c: include <sys/ucontext.h> only if the system has user 
+      context support, fix minor compiler warning. 
+      
+2011-10-11 Alexander Malysh <amalysh at kannel.org>
+    * gwlib/log.[ch], gwlib/utils.[ch]: extracted backtrace output into extra
+      function. Added fatal signal handler in order to be able to trace segfaults.
+
+2011-10-11  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_smpp.c: moved .foreign_id injection from dlr_add() to the
+      submit_sm_resp PDU handling code, otherwise we would ONLY see foreign IDs
+      in the access-log IF DLR have been requested. Now we see them in any case.
+    * gw/dlr.c: remove .foreign_id injection code in dlr_add(), due that this is
+      the wrong place to do it. If the user didn't request a DLR, we still want
+      to pickup the foreign ID and use it, at least in the access-log i.e.
+    
+2011-10-09 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsc/smsc_smpp.c: fixed encoding of LATIN1 messages.
+      This fixes #613.
+      Thanks to Anders B for this patch.
+
+2011-10-09 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsbox.c:: Set charset to UTF-8 for POST requests.
+      This fixes #614.
+      Thanks Anders B for the patch.
+
+2011-10-09 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsbox.c: fixed double charset processing for POST requests.
+      This fixes #615.
+
+2011-10-09 Alexander Malysh <amalysh at kannel.org>
+    * gw/bearerbox.c, gw/shared.[ch], gw/smsbox.c, gw/wapbox.c, gwlib/gwlib.[ch], gwlib/utils.c:
+      This patch should fix issues with restart HTTP command.
+
+2011-10-06  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_http.c: fix default DLR storing behaviour for 'generic' type.
+      We shall always store the DLR temp data in a successful transmission,
+      even if no 'generic-foreign-id-regex' is given. If it is given, then we
+      try to regex scan it and use it for the DLR temp data, if not, then store
+      our own UUID as reference ID of the message. This ensures generic behaves
+      the same way as type kannel.
+
+2011-09-30 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsc/smsc_at.c: fixed double reencoding issue when message retried
+      again after the failure.
+
+2011-09-14 Alexander Malysh <amalysh at kannel.org>
+    * doc/userguide/userguide.xml, gw/smsc/smsc_smpp.c, gwlib/cfg.def: applied
+      patch that allows setting of esm_class in SMPP module.
+      Thanks to Alan McNatty <alan at catalyst.net.nz> for the patch.
+
+2011-09-13  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_http.c: fixed double hex encoding for system type 'kannel'
+      and 'no-sep = yes'. Due that we manipulate the msg->sms.[udh|msg]data
+      directly, and the msg is re-queued in case of a HTTP call failure we get
+      perform the hex encoding again, which results in a truncated content.
+      We need to perform the transcoding on a copy and keep the original.
+      Thanks to Paulo Correia <paulo.correia at go4mobility dot com>.
+      [Msg-Id: <4E6F3FF5.9000009@go4mobility.com>]
+      
 2011-08-19 Alexander Malysh <amalysh at kannel.org>
     * doc/userguide/userguide.xml: fixed userguide compilation.
 

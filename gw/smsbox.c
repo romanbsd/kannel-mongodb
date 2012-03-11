@@ -242,9 +242,12 @@ static void read_messages_from_bearerbox(void)
     while (program_status != shutting_down) {
         /* block infinite for reading messages */
         ret = read_from_bearerbox(&msg, INFINITE_TIME);
-        if (ret == -1)
+        if (ret == -1) {
+            error(0, "Bearerbox is gone, restarting");
+            program_status = shutting_down;
+            restart = 1;
             break;
-        else if (ret == 1) /* timeout */
+        } else if (ret == 1) /* timeout */
             continue;
         else if (msg == NULL) /* just to be sure, may not happens */
             break;
@@ -1267,20 +1270,21 @@ static int obey_request(Octstr **result, URLTranslation *trans, Msg *msg)
 	if (msg->sms.coding == DC_8BIT)
 	    http_header_add(request_headers, "Content-Type",
 			    "application/octet-stream");
-	else
-	    if(msg->sms.coding == DC_UCS2)
+	else if(msg->sms.coding == DC_UCS2)
 		http_header_add(request_headers, "Content-Type", "text/plain; charset=\"UTF-16BE\"");
-	    else {
-		Octstr *header;
-		header = octstr_create("text/plain");
-		if(msg->sms.charset) {
-		    octstr_append(header, octstr_imm("; charset=\""));
-		    octstr_append(header, msg->sms.charset);
-		    octstr_append(header, octstr_imm("\""));
-		}
-		http_header_add(request_headers, "Content-Type", octstr_get_cstr(header));
-		O_DESTROY(header);
-	    }
+	else {
+	    Octstr *header;
+	    header = octstr_create("text/plain");
+	    if(msg->sms.charset) {
+	        octstr_append(header, octstr_imm("; charset=\""));
+	        octstr_append(header, msg->sms.charset);
+	        octstr_append(header, octstr_imm("\""));
+	    } else {
+                octstr_append(header, octstr_imm("; charset=\"UTF-8\""));
+            }
+	    http_header_add(request_headers, "Content-Type", octstr_get_cstr(header));
+	    O_DESTROY(header);
+	}
 	if (urltrans_send_sender(trans))
 	    http_header_add(request_headers, "X-Kannel-From",
 			    octstr_get_cstr(msg->sms.receiver));
@@ -2581,12 +2585,6 @@ static Octstr *smsbox_sendsms_post(List *headers, Octstr *body,
 	goto error;
     }
 
-    if (charset_processing(charset, body, coding) == -1) {
-	*status = HTTP_BAD_REQUEST;
-	ret = octstr_create("Invalid charset");
-	goto error2;
-    }
-
     /* check the username and password */
     t = authorise_username(user, pass, client_ip);
     if (t == NULL) {
@@ -3618,14 +3616,13 @@ int main(int argc, char **argv)
      * Otherwise we will fail while trying to connect to bearerbox!
      */
     if (restart) {
-        gwthread_sleep(5.0);
+        gwthread_sleep(10.0);
+        /* now really restart */
+        restart_box(argv);
     }
 
+    log_close_all();
     gwlib_shutdown();
-
-    /* now really restart */
-    if (restart)
-        execvp(argv[0], argv);
 
     return 0;
 }
