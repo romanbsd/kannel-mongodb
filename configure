@@ -635,6 +635,7 @@ STARTSTOPDAEMONSRC
 SUFFIX
 DOCDRAFTS
 DOCSTARGET
+XML_DCL
 TEX_DSL
 HTML_DSL
 FIG2DEV
@@ -7672,6 +7673,44 @@ eval ac_res=\$$as_ac_File
 $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
   TEX_DSL=$file; found=1
+fi
+
+      fi
+    done
+  fi
+done
+
+found=""
+for loc in /usr /usr/local /sw /opt/local; do
+  if test "x$found" = "x" ; then
+    for file in ${loc}/lib/sgml/stylesheet/dsssl/docbook/nwalsh/dtds/decls/xml.dcl \
+    ${loc}/lib/sgml/stylesheets/nwalsh-modular/dtds/decls/xml.dcl \
+    ${loc}/share/sgml/docbook/dsssl-stylesheets-1.*/dtds/decls/xml.dcl \
+    ${loc}/share/sgml/docbook/dsssl-stylesheets/dtds/decls/xml.dcl \
+    ${loc}/share/sgml/docbook/stylesheet/dsssl/modular/dtds/decls/xml.dcl \
+        ${loc}/share/sgml/docbook/dsssl/modular/dtds/decls/xml.dcl \
+        ${loc}/share/sgml/dsssl/docbook-dsssl-nwalsh/dtds/decls/xml.dcl \
+        ${loc}/share/dsssl/docbook-dsssl/dtds/decls/xml.dcl ; do
+      if test "x$found" = "x" ; then
+    as_ac_File=`$as_echo "ac_cv_file_$file" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $file" >&5
+$as_echo_n "checking for $file... " >&6; }
+if eval \${$as_ac_File+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$file"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+eval ac_res=\$$as_ac_File
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
+  XML_DCL=$file; found=1
 fi
 
       fi

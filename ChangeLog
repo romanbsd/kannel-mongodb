@@ -1,3 +1,14 @@
+2014-04-29  Stipe Tolj  <stolj at kannel.org>
+    * doc/alligata/alligata.xml, doc/arc/arch.xml, doc/userguide/userguide.xml,
+      doc/wtls/wtls.xml: move from DocBook V3.1 to V4.2 and fix various XML
+      tag errors. No content change.
+    * configure[.in]: we need the xml.dcl to be added to the jade execution
+      to have a clean XML tag declaration, since we are in SGML mode here.
+    * Makefile.in: add $(XML_DCL) reference to the xml.dcl file.
+    This patchsets moves the 'make docs' target to use the DocBook V4.2 DTD
+    and schemata in favor of the too old V3.1. It also fixes some slight XML
+    tag inconsistancies in the XML structure, but doesn't change any content.
+    
 2014-04-11 Alexander Malysh <amalysh at kannel.org>
     * gw/smsbox.c, gwlib/gw-timer.[ch]: added callback function to gw-timer
 

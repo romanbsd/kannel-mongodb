@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN"
-     [
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "http://docbook.org/xml/4.2/docbookx.dtd" [
 <!ENTITY figtype "#FIGTYPE#">
 <!ENTITY timestamp "#DATE#">
 <!ENTITY version "#VERSION#">
@@ -461,7 +461,7 @@
 	chapter will explain how the gateway is configured.</para>
 
 	<note><para>If you are upgrading from a previous version, please look at
-	<xref linkend="upgrading-notes"> for any important information.</para></note>
+	<xref linkend="upgrading-notes"/> for any important information.</para></note>
 
 <sect1>
 <title>Getting the source code</title>
@@ -548,7 +548,7 @@
 	<para>If either command writes out an error message and stops
 	before it finishes its job, you have a problem, and you either
 	need to fix it yourself, if you can, or report the
-	problem to the Kannel project. See <xref linkend="bug-reporting">
+	problem to the Kannel project. See <xref linkend="bug-reporting"/>
 	for details.</para>
 	
 	<para>For detailed instruction on using the configuration
@@ -1573,14 +1573,14 @@ admin-password = f00bar
         <entry>POSIX regular expression</entry>
         <entry valign="bottom">
         A regular expression defining the set of accepted senders.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
      <row><entry><literal>black-list-regex</literal></entry>
         <entry>POSIX regular expression</entry>
         <entry valign="bottom">
         A regular expression defining the set of rejected senders.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -2286,7 +2286,7 @@ bearerbox-host = localhost
 	<para><literal>wtls</literal> group is optional and single. The prerequisites for this group
 		are to have defined a wapbox group, and a pair of SSL certificates
 		available. Instructions on how to create self-signed 1024-bit RSA
-		certificates are in <xref linkend="certificates">.
+		certificates are in <xref linkend="certificates"/>.
 	</para>
 	<para>Current imlementation provides for the following functionality:</para>
 	<para>
@@ -2867,7 +2867,7 @@ secret-nas = radius
         <entry valign="bottom">
         SMS messages with SMSC ID equal to any of the IDs in this set of SMSC IDs
         are always routed to this SMSC. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -2876,7 +2876,7 @@ secret-nas = radius
         <entry valign="bottom">
         SMS messages with SMSC ID equal to any of the IDs in this set of SMSC IDs
         are never routed to this SMSC. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -2885,7 +2885,7 @@ secret-nas = radius
         <entry valign="bottom">
         SMS messages with SMSC ID in this set of SMSC IDs are sent to this SMSC
         as preferred.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -2894,7 +2894,7 @@ secret-nas = radius
         <entry valign="bottom">
         A set of phone number prefixes which are accepted to be
         sent through this SMSC. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -2903,7 +2903,7 @@ secret-nas = radius
         <entry valign="bottom">
         A set of phone number prefixes which may not be
         sent through this SMSC. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -2913,7 +2913,7 @@ secret-nas = radius
         As <literal>denied-prefix-regex</literal>, but SMS messages with receiver matching 
         any of these prefixes are preferably sent through this
         SMSC. In a case of multiple preferences, one is selected at random.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -3063,7 +3063,7 @@ my-number = "12345"
 <sect2>
 <title>CMG UCP/EMI 4.0 and 3.5</title>
 
-  <warning><para>See <xref linkend="upgrading-notes"> for changes.</para></warning>
+  <warning><para>See <xref linkend="upgrading-notes"/> for changes.</para></warning>
   <para>Kannel supports two types of connections with CMG SMS centers:
   direct TCP/IP connections ( <literal>emi</literal>) and ISDN/modem 
   (X.25) connection (<literal>emi_x25</literal>).</para>
@@ -3901,7 +3901,7 @@ smsc-password = foo
 <sect2>
 <title>GSM modem</title>
 
-  <warning><para>See <xref linkend="upgrading-notes"> for changes.</para></warning>
+  <warning><para>See <xref linkend="upgrading-notes"/> for changes.</para></warning>
 
   <para>This driver allows a GSM Modem or Phone to be connected to Kannel 
   and work as a virtual SMSC</para>
@@ -4058,7 +4058,7 @@ pin = 2345
 
    <para>Modem definitions are now multiple groups present in kannel.conf,
    either directly or, for example, by including the example
-   modems.conf. (See <xref linkend="includes" endterm="includes.title">)
+   modems.conf. (See <xref linkend="includes" endterm="includes.title"/>)
    </para>
 
  <informaltable frame="none">
@@ -4746,7 +4746,7 @@ send-url = "http://localhost:20022"
      <entry valign="bottom">
        It allows you to set the text returned when a succesful request is made.
        If not set, defaults to 'Sent.'. Note that you can use all sms service escapes
-       here, see <xref linkend="escapecodes" endterm="escapecodes.title"> for details.
+       here, see <xref linkend="escapecodes" endterm="escapecodes.title"/> for details.
      </entry></row>
 
    <row><entry><literal>generic-status-sent (o)</literal></entry>
@@ -4851,12 +4851,12 @@ features to expect from a driver, and to help identify areas where
 drivers need to be updated.  Currently most of the entries are
 marked as "not tested" because the table is still new.</para>
 
-<table frame="ALL">
+<table>
  <title>SMSC driver features</title>
  <tgroup cols="13" align="center">
-  <colspec colname="first" colnum="1" align="center">
-  <colspec colname="last" colnum="13">
-  <spanspec spanname="feature" namest="first" nameend="last">
+  <colspec colname="first" colnum="1" align="center"/>
+  <colspec colname="last" colnum="13"/>
+  <spanspec spanname="feature" namest="first" nameend="last"/>
   <thead>
    <row>
      <entry>Feature</entry>
@@ -5107,12 +5107,12 @@ marked as "not tested" because the table is still new.</para>
  </tgroup>
 </table>
 
-<table frame="ALL">
+<table>
  <title>SMSC driver internal features</title>
  <tgroup cols="13" align="center">
-  <colspec colname="first" colnum="1" align="center">
-  <colspec colname="last" colnum="13">
-  <spanspec spanname="feature" namest="first" nameend="last">
+  <colspec colname="first" colnum="1" align="center"/>
+  <colspec colname="last" colnum="13"/>
+  <spanspec spanname="feature" namest="first" nameend="last"/>
   <thead>
    <row>
      <entry>Feature</entry>
@@ -5187,7 +5187,7 @@ marked as "not tested" because the table is still new.</para>
     <entry>y</entry>
     <entry>y</entry>
     <entry>y?</entry>
-    <entry>y?<footnoteref linkend="nomarkod"></entry>
+    <entry>y?<footnoteref linkend="nomarkod"/></entry>
     <entry>?</entry>
    </row>
 
@@ -5425,7 +5425,7 @@ marked as "not tested" because the table is still new.</para>
 
 <informaltable frame="none">
  <tgroup cols="2">
-  <colspec colnum="1" align="left">
+  <colspec colnum="1" align="left"/>
   <thead>
    <row><entry>Symbol</entry><entry>Meaning</entry></row>
   </thead>
@@ -6362,7 +6362,7 @@ ssl-certkey-file
         Defines the set of accepted destinations of SMS messages. If a 
 	destination of an SMS message is not in this set, any message 
 	received from the HTTP interface is rejected. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
      <row><entry><literal>black-list-regex</literal></entry>
@@ -6370,7 +6370,7 @@ ssl-certkey-file
         <entry valign="bottom">
         As white-list-regex, but SMS messages to numbers within in this set are
         automatically discarded.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
      <row><entry><literal>max-pending-requests</literal></entry>   
@@ -6612,7 +6612,7 @@ get-url = "http://%S"
      This field may be used to enable service-selection based on a regular expression.
      You can define either keyword or keyword-regex in configuration, but not both in
      the same sms-service. keyword-regex is case sensitive.
-     See section on <xref linkend="regular-expressions"> for details.
+     See section on <xref linkend="regular-expressions"/> for details.
    </entry></row>
 
    <row><entry><literal>aliases</literal></entry>
@@ -6656,7 +6656,7 @@ get-url = "http://%S"
         Requested URL. As above, but request is done as XML POST.
 	Always matches the keyword, regardless of pattern matching.
 	See notes on POST other where and <xref
-	    linkend="postxml" endterm="postxml.title">
+	    linkend="postxml" endterm="postxml.title"/>
      </entry></row>
 
    <row><entry><literal>file (c)</literal></entry>
@@ -6803,7 +6803,7 @@ get-url = "http://%S"
      <entry valign="bottom">
         Request reply can include special X-Kannel headers but these
         are only accepted if this variable is set to true. See
-	<xref linkend="xkannel" endterm="xkannel.title">.
+	<xref linkend="xkannel" endterm="xkannel.title"/>.
      </entry></row>
 
    <row><entry><literal>assume-plain-text</literal></entry>
@@ -6902,7 +6902,7 @@ get-url = "http://%S"
         <footnote><para>Even if this service is denied,
 	Kannel still searches for other service which accepts the message,
 	or default service.</para></footnote>
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6913,7 +6913,7 @@ get-url = "http://%S"
         <footnote><para>Even if this service is denied,
 	Kannel still searches for other service which accepts the message,
 	or default service.</para></footnote>
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6925,7 +6925,7 @@ get-url = "http://%S"
 	Kannel still searches for another service which accepts the message.
 	This way there could be several services with the same keyword and
 	different results.</para></footnote>
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6934,7 +6934,7 @@ get-url = "http://%S"
         <entry valign="bottom">
         A set of phone number prefixes of sender-numbers which may
         not use this service.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6945,7 +6945,7 @@ get-url = "http://%S"
         may receive data sent by this service. This can be used to
         allow only inbound SMS to certain shortcut numbers to be allowed
 	to this service.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6954,7 +6954,7 @@ get-url = "http://%S"
         <entry valign="bottom">
         A set of phone number prefixes of receiver-numbers which may not
         receive data sent by this service.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6963,7 +6963,7 @@ get-url = "http://%S"
         <entry valign="bottom">
         Defines a set of accepted senders of SMS messages. If a 
 	sender of an SMS message is not in this list, the message is rejected.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -6972,7 +6972,7 @@ get-url = "http://%S"
         <entry valign="bottom">
         As white-list-regex, but SMS messages from these numbers are
         automatically discarded.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -7098,7 +7098,7 @@ the delivery report URL value
 </entry></row>
 
 <row><entry><literal>%D</literal></entry><entry>
-meta-data from the SMSC. See <xref linkend="meta-data"> for more into.
+meta-data from the SMSC. See <xref linkend="meta-data"/> for more into.
 </entry></row>
 
 <row><entry><literal>%A</literal></entry><entry>
@@ -7255,7 +7255,7 @@ text = "No action specified"
 	<row>
 	<entry><literal>text/xml</literal></entry>
 	<entry>Processed as a POST-XML. See <xref
-	    linkend="postxml" endterm="postxml.title"></entry>
+	    linkend="postxml" endterm="postxml.title"/></entry>
 	</row>
 	
 	<row>
@@ -7710,7 +7710,7 @@ text = "No action specified"
         <entry valign="bottom">
         A set of phone numbers which are accepted to be
         sent using this username. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>
      </row>
 
@@ -7719,7 +7719,7 @@ text = "No action specified"
         <entry valign="bottom">
         A set of phone numbers which may not
         send using this username. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>
      </row>
 
@@ -7729,7 +7729,7 @@ text = "No action specified"
         Defines a set of accepted destinations of SMS messages. If a 
 	destination of an SMS message is not in this list, any message 
 	received from the HTTP interface is rejected. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>
      </row>
 
@@ -7738,7 +7738,7 @@ text = "No action specified"
         <entry valign="bottom">
         As <literal>white-list-regex</literal>, but SMS messages originating from 
         a number matching the pattern are discarded.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>
      </row>
 
@@ -8917,7 +8917,7 @@ allow-ip = 62.254.217.163
         <entry valign="bottom">
              Defines the set of phone-numbers accepting pushes from this 
              pi.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -8926,7 +8926,7 @@ allow-ip = 62.254.217.163
         <entry valign="bottom">
              Defines the set of phone-numbers rejecting pushes from this 
              pi.
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -8934,14 +8934,14 @@ allow-ip = 62.254.217.163
         <entry>POSIX regular expression</entry>
         <entry valign="bottom">
              Set of phone number prefixes allowed in pushes coming from this pi. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
      <row><entry><literal>denied-list-regex</literal></entry>
         <entry>POSIX regular expression</entry>
         <entry valign="bottom">
              Set of phone number prefixes denied in pushes coming from this pi. 
-        See section on <xref linkend="regular-expressions"> for details.
+        See section on <xref linkend="regular-expressions"/> for details.
         </entry>   
      </row>
 
@@ -9694,7 +9694,7 @@ test/fakesmsc -m 1 "100 500 udh %0eudh+stuff+here main+message"
  </table>
 
     <para>In addition, fakesmsc accepts all common Kannel <xref
-    linkend="arguments" endterm="arguments.title"> like 
+    linkend="arguments" endterm="arguments.title"/> like 
     <literal>--verbosity</literal>.</para>
 
 </sect3>
@@ -9840,7 +9840,7 @@ test/fakesmsc -m 1 "100 500 udh %0eudh+stuff+here main+message"
        </para>
 
 	<screen><userinput>
-	test/test_ppg -q http://ppg-host-name:ppg-port?username=ppg-username'&'
+	test/test_ppg -q http://ppg-host-name:ppg-port?username=ppg-username'&amp;'
 	password=ppg-password [content_file] [control_file]
 	</userinput></screen>
    
@@ -10194,7 +10194,7 @@ test/fakesmsc -m 1 "100 500 udh %0eudh+stuff+here main+message"
     <title>Regular Expressions</title>
     <para>Note: this is not intended to be an introduction to regular expressions (short: regex) but a 
     description of their application within Kannel. For general information regarding regexes
-    please refer to <xref linkend="Biblio-regexp">.
+    please refer to <xref linkend="Biblio-regexp"/>.
     </para>
     <sect1>
         <title>Syntax and semantics of the regex configuration parameter</title>
@@ -10569,7 +10569,7 @@ smsc-id = a;b;c
      <entry>meta-data</entry>
      <entry valign="bottom">
 	     Meta-data used to send this message.
-             See <xref linkend="meta-data"> for an explanation about meta-data.
+             See <xref linkend="meta-data"/> for an explanation about meta-data.
      </entry></row>
 
      <row><entry>from</entry>
@@ -10657,13 +10657,13 @@ smsc-id = a;b;c
                         <para>Mobile Terminated - a SMS from application to mobile</para>
                 </glossdef></glossentry>
                 <glossentry id="MWI"><glossterm>MWI</glossterm><glossdef>
-                        <para>Message Waiting Indicator (See <xref linkend="Biblio-3GPP-23038">)</para>
+                        <para>Message Waiting Indicator (See <xref linkend="Biblio-3GPP-23038"/>)</para>
                 </glossdef></glossentry>
                 <glossentry id="MCLASS"><glossterm>MClass</glossterm><glossdef>
-                        <para>Message Class (See <xref linkend="Biblio-3GPP-23038">)</para>
+                        <para>Message Class (See <xref linkend="Biblio-3GPP-23038"/>)</para>
                 </glossdef></glossentry>
                 <glossentry id="CODING"><glossterm>Coding</glossterm><glossdef>
-                        <para>Message Coding (See <xref linkend="Biblio-3GPP-23038">)</para>
+                        <para>Message Coding (See <xref linkend="Biblio-3GPP-23038"/>)</para>
                 </glossdef></glossentry>
         </glossdiv>
 
