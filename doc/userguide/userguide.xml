@@ -3341,7 +3341,6 @@ group = smsc
 smsc = smpp
 host = 123.123.123.123
 port = 600
-receive-port = 700 
 smsc-username = "STT"
 smsc-password = foo
 system-type = "VMA"
@@ -3366,8 +3365,7 @@ address-range = ""
      <entry><literal>port-number</literal></entry>
      <entry valign="bottom">
        The port number for the TRANSMITTER connection to the SMSC. 
-       May be the same as receive-port. 
-		 Use value 0 to disable this I/O thread.
+       If set, receive-port must be ommited or set to 0.
      </entry></row>
 
    <row><entry><literal>use-ssl</literal></entry>
@@ -3387,12 +3385,12 @@ address-range = ""
    <row><entry><literal>transceiver-mode</literal></entry>
      <entry>bool</entry>
      <entry valign="bottom">
-       Attempt to use a TRANSCEIVER mode connection
-       to the SM-SC. It uses the standard transmit 'port',
-       there is no need to set 'receive-port'.
+       Use a TRANSCEIVER mode connection to the SMSC. 
+       It uses the standard transmit 'port' to define the port
+       to connect to.
        This is a SMPP 3.4 and 5.0 feature and will not work
-       on an earlier SM-SC using SMPP 3.3.
-       This will try a bind_transceiver only and will not attempt
+       on an earlier SMSC using SMPP 3.3.
+       This will do a bind_transceiver only and will not attempt
        to fall back to doing transmit and receive on the same connection.
       </entry></row>
 
@@ -3400,15 +3398,14 @@ address-range = ""
      <entry><literal>port-number</literal></entry>
      <entry valign="bottom">
        The port number for the RECEIVER connection to the SMSC. 
-       May be the same as port.
-		 Use value 0 to disable this I/O thread.
+       If set, port must be ommited or set to 0.
      </entry></row>
 
    <row><entry><literal>smsc-username (m)</literal></entry>
      <entry><literal>string</literal></entry>
      <entry valign="bottom">
        The 'username' of the Messaging Entity connecting to the
-       SM-SC. If the SM-SC operator reports that the "TELEPATH
+       SMSC. If the SMSC operator reports that the "TELEPATH
        SYSTEM MANAGER TERMINAL" view "Control.Apps.View" value 
        "Name:" is "SMPP_ZAPVMA_T" for the transmitter and 
        "SMPP_ZAPVMA_R" for the receiver the smsc-username value 

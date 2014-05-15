@@ -116,6 +116,7 @@
 #define SMPP_DEFAULT_CONNECTION_TIMEOUT  10 * SMPP_ENQUIRE_LINK_INTERVAL
 #define SMPP_DEFAULT_WAITACK        60
 #define SMPP_DEFAULT_SHUTDOWN_TIMEOUT 30
+#define SMPP_DEFAULT_PORT           2775
 
 
 /*
@@ -2415,7 +2416,17 @@ int smsc_smpp_create(SMSCConn *conn, CfgGroup *grp)
     /* Check that config is OK */
     ok = 1;
     if (host == NULL) {
-        error(0,"SMPP: Configuration file doesn't specify host");
+        error(0, "SMPP: Configuration file doesn't specify host");
+        ok = 0;
+    }
+    if (port == 0 && receive_port == 0) {
+        port = SMPP_DEFAULT_PORT;
+        warning(0, "SMPP: Configuration file doesn't specify port or receive-port. "
+                   "Using 'port = %ld' as default.", port);
+    }
+    if (port != 0 && receive_port != 0) {
+        error(0, "SMPP: Configuration file can only have port or receive-port. "
+                 "Usage of both in one group is deprecated!");
         ok = 0;
     }
     if (username == NULL) {
