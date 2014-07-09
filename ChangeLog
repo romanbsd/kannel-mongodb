@@ -1,3 +1,8 @@
+2014-07-09  Stipe Tolj  <stolj at kannel.org>
+    * doc/userguide/userguide.xml: fix inconsistent documentation for HTTP
+      admin command /log-level, and add a note that this will be also the
+      log-level for all SMSC specific logs, if any exist.
+      
 2014-05-15  Stipe Tolj  <stolj at kannel.org>
     * doc/userguide/userguide.xml: document the new policy about SMPP config
       groups not having both, the 'port' and the 'receive-port'. 

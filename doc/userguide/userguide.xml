@@ -2022,10 +2022,12 @@ commands never arrive nor can you restart it via WAP anymore.</para>
  		  Beware that you loose the smsbox connections in such a case.
    </entry></row>
 
-	<row><entry><literal>loglevel</literal></entry>
+	<row><entry><literal>log-level</literal></entry>
    <entry valign="bottom">
         Set Kannel log-level of log-files while running. This allows
-		  you to change the current log-level of the log-files on the fly.
+		you to change the current log-level of the log-files on the fly.
+		This includes the main event log and the SMSC specific logs, if
+		any exist.
    </entry></row>
 
 	<row><entry><literal>reload-lists</literal></entry>
