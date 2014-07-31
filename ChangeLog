@@ -1,3 +1,20 @@
+2014-07-31  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_soap_parlayx.c: reverting back to svn r5060.
+    * soap/env_[fault|header].h, soap/env.[ch]: removed, due to revert back.
+    * soap/Markefile.in: reverting back to svn r5060.
+    * soap/plugin: adding directory needed for the local libsoap_plugin.a
+      sources to be compiled.
+    * soap/service/parlayx/parlayx_sms_send_service_2_1_wrapper.h: re-adding
+      the wrapper for the soapcpp2 input file.
+    This patchset basically reverts back the gSOAP plugin library build
+    framework to the svn revision 5060 vesion. There was an approach to
+    establish a concurrent build framework for several gSOAP plugins, but
+    it has shown that this is not easily possible. Even while the latest
+    versions did BUILD multiple plugins in one binary, the runtime behaviour
+    was not as expected, mainly for the WS-Security part and the way the
+    SOAP ENV header is threated in the HTTP request construction. We are
+    rather moving back to the working version for GSMA OneAPI and Parlay/X.
+    
 2014-07-09  Stipe Tolj  <stolj at kannel.org>
     * doc/userguide/userguide.xml: fix inconsistent documentation for HTTP
       admin command /log-level, and add a note that this will be also the
