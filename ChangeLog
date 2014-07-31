@@ -1,4 +1,8 @@
 2014-07-31  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_smpp.c: add the foreign_id to the access-log entry also
+      in the case we DID NOT request a DLR from the upstream SMSC.
+       
+2014-07-31  Stipe Tolj  <stolj at kannel.org>
     * gw/smsc/smsc_soap_parlayx.c: reverting back to svn r5060.
     * soap/env_[fault|header].h, soap/env.[ch]: removed, due to revert back.
     * soap/Markefile.in: reverting back to svn r5060.

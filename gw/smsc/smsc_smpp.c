@@ -1794,11 +1794,20 @@ static int handle_pdu(SMPP *smpp, Connection *conn, SMPP_PDU *pdu,
                     }
                 }
 
-                /* SMSC ACK.. now we have the message id. */
-                if (DLR_IS_ENABLED_DEVICE(msg->sms.dlr_mask))
+                /*
+                 * SMSC ACK.. now we have the message ID.
+                 * The message ID is inserted into the msg struct in dlr_add(),
+                 * and we add it manually here if no DLR was requested, in
+                 * order to get it logged to access-log.
+                 */
+                if (DLR_IS_ENABLED_DEVICE(msg->sms.dlr_mask)) {
                     dlr_add(smpp->conn->id, tmp, msg, 0);
+                    octstr_destroy(tmp);
+                } else {
+                    octstr_destroy(msg->sms.foreign_id);
+                    msg->sms.foreign_id = tmp;
+                }
 
-                octstr_destroy(tmp);
                 bb_smscconn_sent(smpp->conn, msg, NULL);
                 --(*pending_submits);
             } /* end if for SMSC ACK */
