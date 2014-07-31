@@ -503,7 +503,8 @@ Octstr *smpp_pdu_pack(Octstr *smsc_id, SMPP_PDU *pdu)
         case id: { struct name *p = &pdu->u.name; fields } break;
     #include "smpp_pdu.def"
     default:
-        error(0, "Unknown SMPP_PDU type, internal error while packing.");
+        error(0, "Unknown SMPP_PDU type 0x%08lx, internal error while packing.", pdu->type);
+        break;
     }
 
     temp = octstr_create("");
@@ -661,7 +662,8 @@ SMPP_PDU *smpp_pdu_unpack(Octstr *smsc_id, Octstr *data_without_len)
     	case id: { struct name *p = &pdu->u.name; fields } break;
     #include "smpp_pdu.def"
     default:
-    	error(0, "Unknown SMPP_PDU type, internal error while unpacking.");
+    	error(0, "Unknown SMPP_PDU type 0x%08lx, internal error while unpacking.", type);
+    	break;
     }
 
     return pdu;

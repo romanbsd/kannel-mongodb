@@ -1,4 +1,12 @@
 2014-07-31  Stipe Tolj  <stolj at kannel.org>
+    * gw/smpp_pdu.c: add the PDU type value in the ERROR log entry in case
+      we can't [un]pack the PDU.
+    * gw/smsc_smpp.c: ensure we check the SMPP session state for every
+      handled PDU we process. This ensures that we don't blindly trust the
+      SMSC side, which MAY send logically malicious PDUs at specific 
+      state times, i.e. bind resp PDUs while active sessions.
+      
+2014-07-31  Stipe Tolj  <stolj at kannel.org>
     * gw/smsc/smsc_smpp.c: add the foreign_id to the access-log entry also
       in the case we DID NOT request a DLR from the upstream SMSC.
        
