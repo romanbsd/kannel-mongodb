@@ -1,4 +1,8 @@
 2014-08-01  Stipe Tolj  <stolj at kannel.org>
+    * */*: updating the LICENSE preamble to reflect the correct year.
+    * gwlib/gw-timer.[ch]: convert to UNIX line ending. NLC.
+    
+2014-08-01  Stipe Tolj  <stolj at kannel.org>
     * test/drive_smpp.conf: use seperate config groups for transmitter and
       receiver, since we have deprecated the usage of both.
       
