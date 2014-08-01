@@ -1,3 +1,7 @@
+2014-08-01  Stipe Tolj  <stolj at kannel.org>
+    * test/drive_smpp.conf: use seperate config groups for transmitter and
+      receiver, since we have deprecated the usage of both.
+      
 2014-07-31  Stipe Tolj  <stolj at kannel.org>
     * gw/smpp_pdu.c: add the PDU type value in the ERROR log entry in case
       we can't [un]pack the PDU.
