@@ -1,2 +1,6 @@
+2014-09-08 Alexander Malysh <amalysh at kannel.org>
+    * gw/dlr_sqlite3.c: fixed DLR status update, see #705.
+      Thanks to Filippo Natali <filippo.natali at gmail.com> for this patch.
+
 2014-08-01  Stipe Tolj  <stolj at kannel.org>
     * Making stable release 1.4.4.
