@@ -1886,7 +1886,7 @@ static int handle_pdu(SMPP *smpp, Connection *conn, SMPP_PDU *pdu,
                 return 0;
             }
             if (pdu->u.bind_transmitter_resp.command_status != 0 &&
-                pdu->u.bind_transmitter_resp.command_status != SMPP_ESME_RALYNBD) {
+                pdu->u.bind_transmitter_resp.command_status != SMPP_ESME_RALYBND) {
                 error(0, "SMPP[%s]: SMSC rejected login to transmit, code 0x%08lx (%s).",
                       octstr_get_cstr(smpp->conn->id),
                       pdu->u.bind_transmitter_resp.command_status,
@@ -1920,7 +1920,7 @@ static int handle_pdu(SMPP *smpp, Connection *conn, SMPP_PDU *pdu,
                 return 0;
             }
             if (pdu->u.bind_transceiver_resp.command_status != 0 &&
-                pdu->u.bind_transceiver_resp.command_status != SMPP_ESME_RALYNBD) {
+                pdu->u.bind_transceiver_resp.command_status != SMPP_ESME_RALYBND) {
                 error(0, "SMPP[%s]: SMSC rejected login to transmit, code 0x%08lx (%s).",
                       octstr_get_cstr(smpp->conn->id),
                       pdu->u.bind_transceiver_resp.command_status,
@@ -1954,7 +1954,7 @@ static int handle_pdu(SMPP *smpp, Connection *conn, SMPP_PDU *pdu,
                 return 0;
             }
             if (pdu->u.bind_receiver_resp.command_status != 0 &&
-                pdu->u.bind_receiver_resp.command_status != SMPP_ESME_RALYNBD) {
+                pdu->u.bind_receiver_resp.command_status != SMPP_ESME_RALYBND) {
                 error(0, "SMPP[%s]: SMSC rejected login to receive, code 0x%08lx (%s).",
                       octstr_get_cstr(smpp->conn->id),
                       pdu->u.bind_receiver_resp.command_status,

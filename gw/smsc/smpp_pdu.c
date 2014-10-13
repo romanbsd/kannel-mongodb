@@ -780,7 +780,7 @@ const char *smpp_error_to_string(enum SMPP_ERROR_MESSAGES error)
             return "Invalid Command ID";
         case SMPP_ESME_RINVBNDSTS:
             return "Incorrect BIND Status for given command";
-        case SMPP_ESME_RALYNBD:
+        case SMPP_ESME_RALYBND:
             return "ESME Already in Bound State";
         case SMPP_ESME_RINVPRTFLG:
             return "Invalid Priority Flag";
