@@ -249,6 +249,11 @@ static long unlocked_write(Connection *conn)
             } else {
                 error(errno, "SSL write failed: OpenSSL error %d: %s",
                       SSL_error, ERR_error_string(SSL_error, NULL));
+                if (SSL_error == SSL_ERROR_SSL) { /* trace library errors */
+                    long err;
+                    while ((err = ERR_get_error()) != 0) 
+                        error(0, "SSL %s", ERR_error_string(err, NULL));
+                }
                 return -1;
             }
         }

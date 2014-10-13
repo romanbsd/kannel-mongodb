@@ -1,3 +1,7 @@
+2014-10-13 Alexander Malysh <amalysh at kannel.org>
+    * gwlib/conn.c: added more vorvose SSL error.
+      Thanks to Artem Pylypchuk <articice at ua.fm> for this patch.
+
 2014-09-25  Stipe Tolj  <stolj at kannel.org>
     * test/test_regex.c: fix substring dumping, upper limit caused PANIC. NLC.
     
