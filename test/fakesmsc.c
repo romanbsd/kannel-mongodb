@@ -85,10 +85,10 @@ Usage: fakesmsc [-H host] [-r port] [-i interval] [-m max] [-z <type>] <msg> ...
 *        where the given static elements in <msg> are used as constant prefixes,\n\
 * <msg> is message to send, if several are given, they are sent randomly.\n\
 \n\
-msg format: \"sender receiver type(text/data/udh/route) [udhdata|route] msgdata\"\n\
+msg format: \"sender receiver type(text/data/udh/ucs2/route) [udhdata|route] msgdata\"\n\
 \n\
-Type \"text\" means plaintext msgdata, \"data\" urlcoded, \"udh\" urlcoded udh+msg\n\
-and \"route\" means smsbox-id routed plaintext msgdata\n\
+Type \"text\" means plaintext msgdata, \"data\" urlcoded, \"udh\" url-encoded udh+msg,\n\
+\"ucs2\" unicode url-encoded msgdata and \"route\" means smsbox-id routed plaintext msgdata\n\
 Examples: \n\
 \n\
 fakesmsc -m 1 \"123 345 udh %04udh%3f message+data+here\"\n\

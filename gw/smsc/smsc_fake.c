@@ -187,7 +187,13 @@ static void msg_to_bb(SMSCConn *conn, Octstr *line)
         msg->sms.msgdata = octstr_copy(line, p + 1, LONG_MAX);
         msg->sms.coding = DC_8BIT;
         if (octstr_url_decode(msg->sms.msgdata) == -1)
-            warning(0, "smsc_fake: urlcoded data from client looks malformed");
+            warning(0, "smsc_fake: url-encoded data from client looks malformed");
+    }
+    else if (!octstr_compare(type, octstr_imm("ucs2"))) {
+        msg->sms.msgdata = octstr_copy(line, p + 1, LONG_MAX);
+        msg->sms.coding = DC_UCS2;
+        if (octstr_url_decode(msg->sms.msgdata) == -1)
+            warning(0, "smsc_fake: url-encoded data from client looks malformed");
     }
     else if (!octstr_compare(type, octstr_imm("route"))) {
         p2 = octstr_search_char(line, ' ', p + 1);
@@ -206,7 +212,7 @@ static void msg_to_bb(SMSCConn *conn, Octstr *line)
             msg->sms.coding = DC_8BIT;
         if (octstr_url_decode(msg->sms.msgdata) == -1 ||
             octstr_url_decode(msg->sms.udhdata) == -1)
-            warning(0, "smsc_fake: urlcoded data from client looks malformed");
+            warning(0, "smsc_fake: url-encoded data from client looks malformed");
     }
     else if (!octstr_compare(type, octstr_imm("dlr-mask"))) {
         Octstr *tmp;

@@ -1,3 +1,7 @@
+2014-10-13  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_fake.c, test/fakesmsc.c: add UCS-2 (Unicode) support for MO
+      messages withing FAKE SMSC type.
+      
 2014-10-13 Alexander Malysh <amalysh at kannel.org>
     * gw/smsc/smpp_pdu.[ch], gw/smsc/smsc_smpp.c: fixed error code
       SMPP_ESME_RALYNBD -> SMPP_ESME_RALYBND.
