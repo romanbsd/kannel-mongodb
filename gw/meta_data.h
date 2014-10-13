@@ -70,6 +70,8 @@
 #define METADATA_DLR_GROUP_SUBMITTIME "submittime"
 #define METADATA_DLR_GROUP_ERRORCODE  "errorcode"
 
+#define METADATA_SMPP_GROUP           "smpp"
+
 /**
  * Get Dictionary with all values for this group.
  */
