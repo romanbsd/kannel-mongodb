@@ -1,3 +1,7 @@
+2014-10-22 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsc/smsc_smpp.c, gw/dlr.h: dropped SMPP specific intermediate dlr mask
+      and replaced it with abstracted buffered.
+
 2014-10-13  Stipe Tolj  <stolj at kannel.org>
     * gw/smsc/smsc_fake.c, test/fakesmsc.c: add UCS-2 (Unicode) support for MO
       messages withing FAKE SMSC type.

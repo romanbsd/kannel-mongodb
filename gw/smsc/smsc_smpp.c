@@ -1026,7 +1026,7 @@ static SMPP_PDU *msg_to_pdu(SMPP *smpp, Msg *msg)
     else if (DLR_IS_SUCCESS_OR_FAIL(msg->sms.dlr_mask))
         pdu->u.submit_sm.registered_delivery = 1;
 
-    if (DLR_IS_INTERMEDIATE(msg->sms.dlr_mask))
+    if (DLR_IS_BUFFERED(msg->sms.dlr_mask))
         pdu->u.submit_sm.registered_delivery += 16;
 
     /* set priority */
