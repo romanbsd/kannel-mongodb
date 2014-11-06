@@ -1,3 +1,9 @@
+2014-11-06  Stipe Tolj  <stolj at kannel.org>
+    * gwlib/dbpool_mysql.c: handle temporary error codes, mainly for InnoDB's
+      lock handling for mysql_stmt_execute() calls, which are rolled back and
+      then need to be retried by the application side, according to error code
+      references at http://dev.mysql.com/doc/refman/5.0/en/innodb-error-codes.html.
+      
 2014-10-22 Alexander Malysh <amalysh at kannel.org>
     * gw/smsc/smsc_smpp.c, gw/dlr.h: dropped SMPP specific intermediate dlr mask
       and replaced it with abstracted buffered.

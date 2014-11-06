@@ -65,6 +65,17 @@
 
 #ifdef HAVE_MYSQL
 #include <mysql.h>
+#include <mysqld_error.h>
+
+
+/*
+ * Handle temporary error codes, that will cause
+ * mysql_stmt_execute() to be retried.
+ * Add more error codes if applicable from mysql's
+ * <include>/mysq/mysqld_errno.h header file
+ */
+#define MYSQL_ER_TEMP(rc) \
+    (rc == ER_LOCK_WAIT_TIMEOUT || rc == ER_LOCK_DEADLOCK)
 
 
 static void *mysql_open_conn(const DBConf *db_conf)
@@ -311,7 +322,7 @@ static int mysql_update(void *conn, const Octstr *sql, List *binds)
         return -1;
     }
     if (mysql_stmt_prepare(stmt, octstr_get_cstr(sql), octstr_len(sql))) {
-        error(0, "MYSQL: Unable to prepare statement: %s", mysql_stmt_error(stmt));
+        error(0, "MYSQL: Unable to prepare statement: `%s'", mysql_stmt_error(stmt));
         mysql_stmt_close(stmt);
         return -1;
     }
@@ -337,7 +348,13 @@ static int mysql_update(void *conn, const Octstr *sql, List *binds)
     }
 
     /* execute statement */
-    if (mysql_stmt_execute(stmt)) {
+retry:
+    ret = mysql_stmt_execute(stmt);
+    if (MYSQL_ER_TEMP(ret)) {
+        warning(0, "MYSQL: mysql_stmt_execute() failed: `%s'. Retrying.", mysql_stmt_error(stmt));
+        goto retry;
+    }
+    else if (ret != 0) {
         error(0, "MYSQL: mysql_stmt_execute() failed: `%s'", mysql_stmt_error(stmt));
         gw_free(bind);
         mysql_stmt_close(stmt);
