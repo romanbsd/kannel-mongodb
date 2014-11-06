@@ -1,3 +1,6 @@
+2014-11-06 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsc/smpp_pdu.c: added check fo defined fields and print error only if it's unknown TLV
+
 2014-11-06  Stipe Tolj  <stolj at kannel.org>
     * gwlib/dbpool_mysql.c: handle temporary error codes, mainly for InnoDB's
       lock handling for mysql_stmt_execute() calls, which are rolled back and

@@ -319,6 +319,30 @@ static int copy_until_nul(const char *field_name, Octstr *os, long *pos, long ma
     return 0;
 }
 
+static int is_defined_field(long type, const char *field_name)
+{
+    switch (type) {
+    #define OPTIONAL_BEGIN
+    #define TLV_INTEGER(name, octets) OCTETS(name, octets)
+    #define TLV_NULTERMINATED(name, max_len) OCTETS(name, max_len)
+    #define TLV_OCTETS(name, min_len, max_len) OCTETS(name, min_len)
+    #define OPTIONAL_END
+    #define INTEGER(name, octets) OCTETS(name, octets)
+    #define NULTERMINATED(name, max_octets) OCTETS(name, max_octets)
+    #define OCTETS(name, field_giving_octetst) \
+            if (strncmp(#name, field_name, sizeof(#name) - 1) == 0) \
+                return 1;
+    #define PDU(name, id, fields) \
+        case id: { \
+            fields \
+        } break;
+    #include "smpp_pdu.def"
+    default:
+        break;
+    }
+
+    return 0;
+}
 
 SMPP_PDU *smpp_pdu_create(unsigned long type, unsigned long seq_no)
 {
@@ -442,7 +466,8 @@ Octstr *smpp_pdu_pack(Octstr *smsc_id, SMPP_PDU *pdu)
             while(keys != NULL && (key = gwlist_extract_first(keys)) != NULL) { \
                 tlv = smpp_tlv_get_by_name(smsc_id, key); \
                 if (tlv == NULL) { \
-                    error(0, "SMPP: Unknown TLV `%s', don't send.", octstr_get_cstr(key)); \
+                    if (!is_defined_field(pdu->type, octstr_get_cstr(key))) \
+                        error(0, "SMPP: Unknown TLV `%s', don't send.", octstr_get_cstr(key)); \
                     octstr_destroy(key); \
                     continue; \
                 } \
