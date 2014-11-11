@@ -69,7 +69,7 @@
 		<surname>Malysh</surname>
 		<affiliation>
 			<jobtitle>Senior Software Engineer</jobtitle>
-			<orgname>GTX Ltd.</orgname>
+			<orgname>GTX Messaging GmbH.</orgname>
 			<address> 
 				<email>amalysh at kannel.org</email>
 				<otheraddr>http://www.gtx-messaging.com/</otheraddr>
@@ -10455,6 +10455,15 @@ smsc-id = a;b;c
 	</tbody>
   </tgroup>
 </informaltable>
+<para>
+Beside defined in the configuration <literal>smpp-tlv</literal> group, SMPP also supports some hardcoded <literal>meta-data</literal>
+values:
+<itemizedlist>
+<listitem><para>source_addr_ton</para></listitem>
+<listitem><para>source_addr_npi</para></listitem>
+</itemizedlist>
+</para>
+
       <sect2>
         <title>MO Messages</title>
         <para>Meta Data coming from MO messages comes urlencoded into the <literal>%D</literal> parameter. Only TLV parameters defined on the configuration file are honored.</para>

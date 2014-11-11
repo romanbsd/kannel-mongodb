@@ -1,3 +1,6 @@
+2014-11-11 Alexander Malysh <amalysh at kannel.org>
+    * gw/smsc/smsc_smpp.c: allow overwrite of source_addr ton/npi on message basis via meta_data
+
 2014-11-06 Alexander Malysh <amalysh at kannel.org>
     * gw/smsc/smpp_pdu.c: added check fo defined fields and print error only if it's unknown TLV
 

@@ -827,6 +827,8 @@ static SMPP_PDU *msg_to_pdu(SMPP *smpp, Msg *msg)
 {
     SMPP_PDU *pdu;
     int validity;
+    Octstr *tmp;
+    int source_addr_ton_npi_set;
 
     pdu = smpp_pdu_create(submit_sm,
                           counter_increase(smpp->message_id_counter));
@@ -860,7 +862,23 @@ static SMPP_PDU *msg_to_pdu(SMPP *smpp, Msg *msg)
         pdu->u.submit_sm.source_addr_npi = GSM_ADDR_NPI_E164; /* ISDN number plan */
     }
 
-    if (pdu->u.submit_sm.source_addr && smpp->autodetect_addr) {
+    /* check for the overwrite of source_addr ton/npi */
+    source_addr_ton_npi_set = 0;
+    tmp = meta_data_get_value(msg->sms.meta_data, METADATA_SMPP_GROUP, octstr_imm("source_addr_ton"));
+    if (tmp != NULL) {
+        source_addr_ton_npi_set = 1;
+        pdu->u.submit_sm.source_addr_ton = atoi(octstr_get_cstr(tmp));
+        octstr_destroy(tmp);
+    }
+    tmp = meta_data_get_value(msg->sms.meta_data, METADATA_SMPP_GROUP, octstr_imm("source_addr_npi"));
+    if (tmp != NULL) {
+        source_addr_ton_npi_set = 1;
+        pdu->u.submit_sm.source_addr_npi = atoi(octstr_get_cstr(tmp));
+        octstr_destroy(tmp);
+    }
+
+    /* don't touch source_addr ton/npi if overwritten in meta_data */
+    if (pdu->u.submit_sm.source_addr && !source_addr_ton_npi_set && smpp->autodetect_addr) {
         /* lets see if its international or alphanumeric sender */
         if (octstr_get_char(pdu->u.submit_sm.source_addr, 0) == '+') {
             if (!octstr_check_range(pdu->u.submit_sm.source_addr, 1, 256, gw_isdigit)) {
