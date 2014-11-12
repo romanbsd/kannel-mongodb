@@ -3000,6 +3000,14 @@ secret-nas = radius
         to activate it. Defaults to 'false' if not present.</entry>
      </row>
 
+     <row><entry><literal>instances</literal></entry>
+        <entry>number</entry>
+        The number of same instances of this group to be created. This allows to declare
+        the config group one time in the configuration and to multiply it by this value
+        for the numner of runtime instances. (default: 1)
+        </entry>   
+     </row>
+
   </tbody>
   </tgroup>
  </table>

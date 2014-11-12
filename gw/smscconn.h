@@ -199,5 +199,12 @@ int smscconn_status(SMSCConn *smscconn);
  */
 int smscconn_info(SMSCConn *smscconn, StatusInfo *infotable);
 
+/* Determine if the specific SMS center group will be started
+ * with multiple instances.
+ * Return the number of multiple instances that should be started.
+ * If no multiple indicator is set in the config group, then 1
+ * is returned.
+ */
+unsigned int smscconn_instances(CfgGroup *grp);
 
 #endif

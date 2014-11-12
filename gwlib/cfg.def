@@ -431,6 +431,7 @@ MULTI_GROUP(smsc,
     OCTSTR(generic-status-sent)
     OCTSTR(generic-status-error)
     OCTSTR(generic-foreign-id-regex)
+    OCTSTR(instances)
 )
 
 

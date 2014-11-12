@@ -146,6 +146,19 @@ static void init_reroute(SMSCConn *conn, CfgGroup *grp)
 }
 
 
+unsigned int smscconn_instances(CfgGroup *grp)
+{
+    long i;
+
+    if (cfg_get_integer(&i, grp, octstr_imm("instances")) == -1)
+        i = 1;
+    else if (i < 0)
+        i = 0;
+
+    return i;
+}
+
+
 SMSCConn *smscconn_create(CfgGroup *grp, int start_as_stopped)
 {
     SMSCConn *conn;

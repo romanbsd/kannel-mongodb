@@ -740,7 +740,7 @@ int smsc2_start(Cfg *cfg)
     CfgGroup *grp;
     SMSCConn *conn;
     Octstr *os;
-    int i;
+    int i, j, m;
 
     if (smsc_running) return -1;
 
@@ -851,10 +851,14 @@ int smsc2_start(Cfg *cfg)
     gwlist_add_producer(smsc_list);
     for (i = 0; i < gwlist_len(smsc_groups) && 
         (grp = gwlist_get(smsc_groups, i)) != NULL; i++) {
-        conn = smscconn_create(grp, 1); 
-        if (conn == NULL)
-            panic(0, "Cannot start with SMSC connection failing");
-        gwlist_append(smsc_list, conn);
+        /* multiple instances for the same group? */
+        m = smscconn_instances(grp);
+        for (j = 0; j < m; j++) {
+            conn = smscconn_create(grp, 1);
+            if (conn == NULL)
+                panic(0, "Cannot start with SMSC connection failing");
+            gwlist_append(smsc_list, conn);
+        }
     }
     gwlist_remove_producer(smsc_list);
     

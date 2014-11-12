@@ -1,4 +1,11 @@
 2014-11-12  Stipe Tolj  <stolj at kannel.org>
+    * doc/userguide.xml: added 'instances' to 'group = smsc' context.
+    * gw/[bb_]smscconn.[ch]: allow multiple instances to be created via the
+      corresponding config directive.
+    * gwlib/cfg.def: added 'instances' to 'group = smsc' context.
+    [Msg-Id: <5452797C.2020207@kannel.org>]
+    
+2014-11-12  Stipe Tolj  <stolj at kannel.org>
     * doc/userguide.xml: document new config directives and declare deprecates.
     * gw/bb_boxc.c: handle SMSCCONN_FAILED_REJECTED response for routing.
     * gw/bb_smscconn.c: crean the white/black listing handling to support 
