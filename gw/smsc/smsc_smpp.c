@@ -828,7 +828,7 @@ static SMPP_PDU *msg_to_pdu(SMPP *smpp, Msg *msg)
     SMPP_PDU *pdu;
     int validity;
     Octstr *tmp;
-    int source_addr_ton_npi_set;
+    int ton_npi_forced;
 
     pdu = smpp_pdu_create(submit_sm,
                           counter_increase(smpp->message_id_counter));
@@ -862,23 +862,23 @@ static SMPP_PDU *msg_to_pdu(SMPP *smpp, Msg *msg)
         pdu->u.submit_sm.source_addr_npi = GSM_ADDR_NPI_E164; /* ISDN number plan */
     }
 
-    /* check for the overwrite of source_addr ton/npi */
-    source_addr_ton_npi_set = 0;
+    /* Check for forced source ton and npi values via meta-data */
+    ton_npi_forced = 0;
     tmp = meta_data_get_value(msg->sms.meta_data, METADATA_SMPP_GROUP, octstr_imm("source_addr_ton"));
     if (tmp != NULL) {
-        source_addr_ton_npi_set = 1;
+        ton_npi_forced = 1;
         pdu->u.submit_sm.source_addr_ton = atoi(octstr_get_cstr(tmp));
         octstr_destroy(tmp);
     }
     tmp = meta_data_get_value(msg->sms.meta_data, METADATA_SMPP_GROUP, octstr_imm("source_addr_npi"));
     if (tmp != NULL) {
-        source_addr_ton_npi_set = 1;
+        ton_npi_forced = 1;
         pdu->u.submit_sm.source_addr_npi = atoi(octstr_get_cstr(tmp));
         octstr_destroy(tmp);
     }
 
     /* don't touch source_addr ton/npi if overwritten in meta_data */
-    if (pdu->u.submit_sm.source_addr && !source_addr_ton_npi_set && smpp->autodetect_addr) {
+    if (pdu->u.submit_sm.source_addr && !ton_npi_forced && smpp->autodetect_addr) {
         /* lets see if its international or alphanumeric sender */
         if (octstr_get_char(pdu->u.submit_sm.source_addr, 0) == '+') {
             if (!octstr_check_range(pdu->u.submit_sm.source_addr, 1, 256, gw_isdigit)) {
@@ -927,13 +927,31 @@ static SMPP_PDU *msg_to_pdu(SMPP *smpp, Msg *msg)
         pdu->u.submit_sm.dest_addr_npi = GSM_ADDR_NPI_E164; /* ISDN number plan */
     }
 
-    /*
-     * if its a international number starting with +, lets remove the
-     * '+' and set number type to international instead
-     */
-    if (octstr_get_char(pdu->u.submit_sm.destination_addr,0) == '+') {
-        octstr_delete(pdu->u.submit_sm.destination_addr, 0,1);
-        pdu->u.submit_sm.dest_addr_ton = GSM_ADDR_TON_INTERNATIONAL;
+    /* Check for forced destination ton and npi values via meta-data */
+    ton_npi_forced = 0;
+    tmp = meta_data_get_value(msg->sms.meta_data, METADATA_SMPP_GROUP, octstr_imm("dest_addr_ton"));
+    if (tmp != NULL) {
+        ton_npi_forced = 1;
+        pdu->u.submit_sm.dest_addr_ton = atoi(octstr_get_cstr(tmp));
+        octstr_destroy(tmp);
+    }
+    tmp = meta_data_get_value(msg->sms.meta_data, METADATA_SMPP_GROUP, octstr_imm("dest_addr_npi"));
+    if (tmp != NULL) {
+        ton_npi_forced = 1;
+        pdu->u.submit_sm.dest_addr_npi = atoi(octstr_get_cstr(tmp));
+        octstr_destroy(tmp);
+    }
+
+    /* don't touch source_addr ton/npi if overwritten in meta_data */
+    if (!ton_npi_forced) {
+        /*
+         * if its a international number starting with +, lets remove the
+         * '+' and set number type to international instead
+         */
+        if (octstr_get_char(pdu->u.submit_sm.destination_addr,0) == '+') {
+            octstr_delete(pdu->u.submit_sm.destination_addr, 0,1);
+            pdu->u.submit_sm.dest_addr_ton = GSM_ADDR_TON_INTERNATIONAL;
+        }
     }
 
     /* check length of src/dst address */

@@ -1,4 +1,8 @@
 2014-11-12  Stipe Tolj  <stolj at kannel.org>
+    * gw/smsc/smsc_smpp.c: extend Alex's patchset to also support destination
+      TON/NPI setting via meta-data values.
+      
+2014-11-12  Stipe Tolj  <stolj at kannel.org>
     * doc/userguide.xml: added 'instances' to 'group = smsc' context.
     * gw/[bb_]smscconn.[ch]: allow multiple instances to be created via the
       corresponding config directive.
