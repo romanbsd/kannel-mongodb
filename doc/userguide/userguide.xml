@@ -1397,20 +1397,98 @@ admin-password = f00bar
     <row><entry><literal>white-list</literal></entry>
      <entry>URL</entry>
      <entry valign="bottom">
+        (Deprecated, see <literal>white-list-sender</literal>).
+     </entry></row>
+
+     <row><entry><literal>white-list-regex</literal></entry>
+        <entry>POSIX regular expression</entry>
+        <entry valign="bottom">
+        (Deprecated, see <literal>white-list-sender-regex</literal>).
+        </entry>   
+     </row>
+
+    <row><entry><literal>black-list</literal></entry>
+     <entry>URL</entry>
+     <entry valign="bottom">
+        (Deprecated, see <literal>black-list-sender</literal>).
+     </entry></row>
+
+     <row><entry><literal>black-list-regex</literal></entry>
+        <entry>POSIX regular expression</entry>
+        <entry valign="bottom">
+        (Deprecated, see <literal>black-list-sender-regex</literal>).
+        </entry>   
+     </row>
+
+    <row><entry><literal>white-list-sender</literal></entry>
+     <entry>URL</entry>
+     <entry valign="bottom">
         Load a list of accepted senders of SMS messages. If a sender
         of an SMS message is not in this list, any message received
-        from the SMS Center is discarded. See notes of phone number
+        from the SMS Center, or tried to be delivered to the SMS Center
+        is rejected. See notes of phone number
         format from numhash.h header file. NOTE: the system has only
         a precision of last 9 or 18 digits of phone numbers, so
         beware!
      </entry></row>
 
-    <row><entry><literal>black-list</literal></entry>
+     <row><entry><literal>white-list-sender-regex</literal></entry>
+        <entry>POSIX regular expression</entry>
+        <entry valign="bottom">
+        A regular expression defining the set of accepted senders.
+        See section on <xref linkend="regular-expressions"/> for details.
+        </entry>   
+     </row>
+
+    <row><entry><literal>black-list-sender</literal></entry>
      <entry>URL</entry>
      <entry valign="bottom">
-        As white-list, but SMS messages to these numbers are
-        automatically discarded
+        As white-list-sender, but SMS messages from these sender numbers are
+        automatically rejected.
      </entry></row>
+
+     <row><entry><literal>black-list-sender-regex</literal></entry>
+        <entry>POSIX regular expression</entry>
+        <entry valign="bottom">
+        A regular expression defining the set of rejected senders.
+        See section on <xref linkend="regular-expressions"/> for details.
+        </entry>   
+     </row>
+
+    <row><entry><literal>white-list-receiver</literal></entry>
+     <entry>URL</entry>
+     <entry valign="bottom">
+        Load a list of accepted receiver of SMS messages. If a receiver
+        of an SMS message is not in this list, any message received
+        from the SMS Center, or tried to be delivered to the SMS Center
+        is rejected. See notes of phone number
+        format from numhash.h header file. NOTE: the system has only
+        a precision of last 9 or 18 digits of phone numbers, so
+        beware!
+     </entry></row>
+
+     <row><entry><literal>white-list-receiver-regex</literal></entry>
+        <entry>POSIX regular expression</entry>
+        <entry valign="bottom">
+        A regular expression defining the set of accepted receivers.
+        See section on <xref linkend="regular-expressions"/> for details.
+        </entry>   
+     </row>
+
+    <row><entry><literal>black-list-receiver</literal></entry>
+     <entry>URL</entry>
+     <entry valign="bottom">
+        As white-list, but SMS messages from these receiver numbers are
+        automatically rejected.
+     </entry></row>
+
+     <row><entry><literal>black-list-receiver-regex</literal></entry>
+        <entry>POSIX regular expression</entry>
+        <entry valign="bottom">
+        A regular expression defining the set of rejected receivers.
+        See section on <xref linkend="regular-expressions"/> for details.
+        </entry>   
+     </row>
 
     <row><entry><literal>store-type</literal></entry>
      <entry>filename</entry>
@@ -1547,7 +1625,7 @@ admin-password = f00bar
      <row><entry><literal>maximum-queue-length</literal></entry>
 	  <entry>number of messages</entry>
      <entry valign="bottom">
-   	 (deprecated, see <literal>sms-incoming-queue-limit</literal>).
+   	 (Deprecated, see <literal>sms-incoming-queue-limit</literal>).
      </entry></row>
 
      <row><entry><literal>sms-incoming-queue-limit</literal></entry>
@@ -1568,21 +1646,6 @@ admin-password = f00bar
         has hit this value, Kannel began to discard them.
         The default value, 1 million, works for most installations.
      </entry></row>
-
-     <row><entry><literal>white-list-regex</literal></entry>
-        <entry>POSIX regular expression</entry>
-        <entry valign="bottom">
-        A regular expression defining the set of accepted senders.
-        See section on <xref linkend="regular-expressions"/> for details.
-        </entry>   
-     </row>
-     <row><entry><literal>black-list-regex</literal></entry>
-        <entry>POSIX regular expression</entry>
-        <entry valign="bottom">
-        A regular expression defining the set of rejected senders.
-        See section on <xref linkend="regular-expressions"/> for details.
-        </entry>   
-     </row>
 
      <row><entry><literal>smsbox-max-pending</literal></entry>
         <entry>number of messages</entry>
