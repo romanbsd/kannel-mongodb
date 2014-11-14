@@ -10532,6 +10532,8 @@ values:
 <itemizedlist>
 <listitem><para>source_addr_ton</para></listitem>
 <listitem><para>source_addr_npi</para></listitem>
+<listitem><para>dest_addr_ton</para></listitem>
+<listitem><para>dest_addr_npi</para></listitem>
 </itemizedlist>
 </para>
 
