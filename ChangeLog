@@ -1,3 +1,21 @@
+2014-11-17  Stipe Tolj  <stolj at kannel.org>
+    * doc/userguide/userguide.xml: document the new graceful restarting.
+    * gw/bb_http.c: add new HTTP admin URI /graceful-restart.
+    * gw/bb_smscconn.c: implements graceful restarting of bearerbox.
+    * gw/bearebox.[ch]: signal SIGHUP handling for graceful restarting, and 
+      SIGUSR2 for pure log re-opening.
+    * gw/smscconn_p.h: add MD5 checksum variable for graceful restarting.
+    * gw/smscconn.[ch]: do MD5 calculation on parts of the config for change
+      detection.
+    * gwlib/cfg.[ch]: additions for MD5 calculation of the config parts.
+    This patchset 'gateway-graceful-restart.v5.diff' implements the soft/graceful
+    restarting of bearerbox. Where the process can be signaled via SIGHUP and
+    re-loads the SMSC configurations. Any config parts that are not modified
+    keep on running, and either SMSCs are re-connected or shutdown. In addition
+    re-configuration of routing config directives will cause NO re-connecting
+    of the corresponding SMSC groups.
+    [Msg-Id: <50822776.7040809@kannel.org>]
+    
 2014-11-12  Stipe Tolj  <stolj at kannel.org>
     * gw/smsc/smsc_smpp.c: extend Alex's patchset to also support destination
       TON/NPI setting via meta-data values.

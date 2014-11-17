@@ -207,4 +207,9 @@ int smscconn_info(SMSCConn *smscconn, StatusInfo *infotable);
  */
 unsigned int smscconn_instances(CfgGroup *grp);
 
+/* Reconfigure the running SMSC for any routing relevant
+ * information from the configuration group.
+ */
+void smscconn_reconfig(SMSCConn *conn, CfgGroup *grp);
+
 #endif

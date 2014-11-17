@@ -127,6 +127,7 @@ extern Octstr *cfg_filename;
 static volatile sig_atomic_t smsc_running;
 static List *smsc_list;
 static RWLock smsc_list_lock;
+static Cfg *cfg_reloaded;
 static List *smsc_groups;
 static Octstr *unified_prefix;
 
@@ -622,17 +623,16 @@ long bb_smscconn_receive(SMSCConn *conn, Msg *sms)
 
 int bb_reload_smsc_groups()
 {
-    Cfg *cfg;
-
-    debug("bb.sms", 0, "Reloading groups list from disk");
-    cfg =  cfg_create(cfg_filename);
-    if (cfg_read(cfg) == -1) {
+    debug("bb.sms", 0, "Reloading smsc groups list from config resource");
+    cfg_destroy(cfg_reloaded);
+    cfg_reloaded = cfg_create(cfg_filename);
+    if (cfg_read(cfg_reloaded) == -1) {
         warning(0, "Error opening configuration file %s", octstr_get_cstr(cfg_filename));
         return -1;
     }
-    if (smsc_groups != NULL)
-        gwlist_destroy(smsc_groups, NULL);
-    smsc_groups = cfg_get_multi_group(cfg, octstr_imm("smsc"));
+    gwlist_destroy(smsc_groups, NULL);
+    smsc_groups = cfg_get_multi_group(cfg_reloaded, octstr_imm("smsc"));
+
     return 0;
 }
 
@@ -640,8 +640,6 @@ int bb_reload_smsc_groups()
 /*---------------------------------------------------------------------
  * Other functions
  */
-
-
 
 /* function to route outgoing SMS'es from delay-list
  * use some nice magics to route them to proper SMSC
@@ -728,6 +726,72 @@ static void sms_router(void *arg)
 }
 
 
+#define OCTSTR(os)  octstr_imm(#os)
+
+static int cmp_conn_grp_checksum(void *a, void *b)
+{
+	int ret;
+	SMSCConn *conn = a;
+    Octstr *os;
+
+    os = cfg_get_group_checksum((CfgGroup*)b,
+            NULL
+    );
+
+	ret = (octstr_compare(conn->chksum, os) == 0);
+	octstr_destroy(os);
+
+	return ret;
+}
+
+
+static int cmp_rout_grp_checksum(void *a, void *b)
+{
+	int ret;
+	SMSCConn *conn = a;
+	Octstr *os;
+
+	os = cfg_get_group_checksum((CfgGroup*)b,
+		    OCTSTR(denied-smsc-id),
+		    OCTSTR(allowed-smsc-id),
+		    OCTSTR(preferred-smsc-id),
+		    OCTSTR(allowed-prefix),
+		    OCTSTR(denied-prefix),
+		    OCTSTR(preferred-prefix),
+		    OCTSTR(unified-prefix),
+		    OCTSTR(reroute),
+		    OCTSTR(reroute-smsc-id),
+		    OCTSTR(reroute-receiver),
+		    OCTSTR(reroute-dlr),
+		    OCTSTR(allowed-smsc-id-regex),
+		    OCTSTR(denied-smsc-id-regex),
+		    OCTSTR(preferred-smsc-id-regex),
+		    OCTSTR(allowed-prefix-regex),
+		    OCTSTR(denied-prefix-regex),
+		    OCTSTR(preferred-prefix-regex),
+		    NULL
+	);
+
+	ret = (octstr_compare(conn->chksum_conn, os) == 0);
+	octstr_destroy(os);
+
+	return ret;
+}
+
+#undef OCTSTR
+
+
+static int cmp_conn_grp_id(void *a, void *b)
+{
+	int ret;
+	SMSCConn *conn = a;
+	Octstr *os = cfg_get((CfgGroup*)b, octstr_imm("smsc-id"));
+
+	ret = (os && octstr_compare(conn->id, os) == 0);
+	octstr_destroy(os);
+
+    return ret;
+}
 
 
 /*-------------------------------------------------------------
@@ -743,6 +807,9 @@ int smsc2_start(Cfg *cfg)
     int i, j, m;
 
     if (smsc_running) return -1;
+
+    /* at start-up time there is no reloaded config */
+    cfg_reloaded = NULL;
 
     /* create split sms counter */
     split_msg_counter = counter_create();
@@ -1389,6 +1456,7 @@ Octstr *smsc2_status(int status_type)
                 break;
             default:
                 sprintf(tmp3, "unknown");
+                break;
         }
 
         if (status_type == BBSTATUS_XML)
@@ -1431,9 +1499,6 @@ Octstr *smsc2_status(int status_type)
                 lb);
     }
 
-
-
-
     gw_rwlock_unlock(&smsc_list_lock);
 
     if (para)
@@ -1443,6 +1508,184 @@ Octstr *smsc2_status(int status_type)
     else
         octstr_append_cstr(tmp, "\n\n");
     return tmp;
+}
+
+
+int smsc2_graceful_restart(void)
+{
+    CfgGroup *grp;
+    SMSCConn *conn;
+    List *keep, *add, *remove;
+    List *l;
+    int i, m;
+
+    if (!smsc_running)
+        return -1;
+
+    gw_rwlock_wrlock(&smsc_list_lock);
+
+    /* load the smsc groups from the config resource */
+    if (bb_reload_smsc_groups() != 0) {
+        gw_rwlock_unlock(&smsc_list_lock);
+        return -1;
+    }
+
+    /* List of SMSCConn that we keep running */
+    keep = gwlist_create();
+
+    /* List of CfgGroup that we will add */
+    add = gwlist_create();
+
+    /* List of SMSCConnn that we will shutdown */
+    remove = gwlist_create();
+
+    /*
+     * Loop through the loaded smsc groups
+     */
+    for (i = 0; i < gwlist_len(smsc_groups) &&
+        (grp = gwlist_get(smsc_groups, i)) != NULL; i++) {
+        /*
+         * 1st check: Search for the same md5 hash of the whole group.
+         * If we find it, then this group is already running, and no
+         * routing information has changed, bail out.
+         */
+        if ((l = gwlist_search_all(smsc_list, grp, cmp_conn_grp_checksum)) != NULL) {
+            while ((conn = gwlist_extract_first(l)) != NULL) {
+                gwlist_append(keep, conn);
+            }
+            gwlist_destroy(l, NULL);
+            continue;
+        }
+        /*
+         * 2nd check: Search for the same md5 hash minus the routing
+         * information. If we find it, then this group is already running
+         * and the routing information changed, we'll apply only the new
+         * routing information.
+         */
+        if ((l = gwlist_search_all(smsc_list, grp, cmp_rout_grp_checksum)) != NULL) {
+            while ((conn = gwlist_extract_first(l)) != NULL) {
+                gwlist_append(keep, conn);
+                smscconn_reconfig(conn, grp);
+                info(0, "Re-configured routing for smsc-id `%s'.", octstr_get_cstr(conn->id));
+            }
+            gwlist_destroy(l, NULL);
+            continue;
+        }
+        /*
+         * 3rd check: if the smsc-id is NOT in the running list, then
+         * this is a new group, add it. If the smsc-id IS found, then
+         * mark it/them to be removed, and add the new group.
+         */
+        if ((l = gwlist_search_all(smsc_list, grp, cmp_conn_grp_id)) == NULL) {
+        	gwlist_append(add, grp);
+        	continue;
+        } else {
+        	while ((conn = gwlist_extract_first(l)) != NULL) {
+        		/* add them to the remove list only
+        		 * if they are not yet present inside. */
+        		if (gwlist_search_equal(remove, conn) != -1)
+        			gwlist_append(remove, conn);
+        	}
+        	gwlist_destroy(l, NULL);
+        	gwlist_append(add, grp);
+        	continue;
+        }
+    }
+
+    /*
+     * TODO Effectively a change in the 'instances' multiplier will result in a
+     * disconnect of all running instances, and re-connecting the number of
+     * configured instances. The reason for this is that the change in the
+     * 'instances' value causes the md5 hash to be different for that connection.
+     * We MAY exclude the 'instances' directive from the while md5 checksum, this
+     * makes the down-grading easier, allowing the rest to keep running. But the
+     * up-grading is more difficult, since we can't use the 'add' list here, it
+     * would create too much instances.
+     */
+
+    /*
+     * We may have running smsc-ids now, that haven't been
+     * re-loaded from the new config, hence add them to be removed.
+     */
+    for (i = 0; i < gwlist_len(smsc_list) &&
+        (conn = gwlist_get(smsc_list, i)) != NULL; i++) {
+    	/* if this is already in the remove list, bail out. */
+    	if (gwlist_search_equal(remove, conn) != -1)
+    		continue;
+    	/* if this is in the keep list, bail out. */
+    	if (gwlist_search_equal(keep, conn) != -1)
+    		continue;
+    	/* mark it to be removed */
+    	gwlist_append(remove, conn);
+    }
+    gwlist_destroy(keep, NULL);
+
+    /*
+     * Stop any connections from the remove list.
+     *
+     * The smscconn_shutdown() only initiates the shutdown,
+     * it is not guaranteed that the SMSC connection is stopped
+     * and the status is SMSCCONN_DEAD when we return from the
+     * function call. Therefore we pass the connection to a
+     * retry list, in order to cleanly destroy all connection
+     * structures that have been stopped and reached SMSSCONN_DEAD.
+     */
+    l = gwlist_create();
+    gwlist_add_producer(smsc_list);
+    while ((conn = gwlist_extract_first(remove)) != NULL) {
+    	if ((i = gwlist_search_equal(smsc_list, conn)) != -1) {
+            gwlist_delete(smsc_list, i, 1);
+            smscconn_shutdown(conn, 0);
+            /* if smsc is still in shutdown, then add to retry list */
+            if (smscconn_destroy(conn) == -1)
+            	gwlist_append(l, conn);
+    	}
+    }
+    gwlist_remove_producer(smsc_list);
+    gwlist_destroy(remove, NULL);
+
+    /*
+     * Start any connections from the add list.
+     */
+    gwlist_add_producer(smsc_list);
+    while ((grp = gwlist_extract_first(add)) != NULL) {
+        /* multiple instances for the same group? */
+        m = smscconn_instances(grp);
+        for (i = 0; i < m; i++) {
+            conn = smscconn_create(grp, 1);
+            if (conn != NULL) {
+                gwlist_append(smsc_list, conn);
+                if (conn->dead_start) {
+                    /* Shutdown connection if it's not configured to connect at start-up time */
+                    smscconn_shutdown(conn, 0);
+                } else {
+                    smscconn_start(conn);
+                }
+            }
+        }
+    }
+    gwlist_remove_producer(smsc_list);
+    gwlist_destroy(add, NULL);
+
+    gw_rwlock_unlock(&smsc_list_lock);
+
+    /* wake-up the router */
+    if (router_thread >= 0)
+        gwthread_wakeup(router_thread);
+
+    /*
+     * We may still have pending connections in the retry list
+     * that haven't been destroyed yet.
+     */
+    while ((conn = gwlist_extract_first(l)) != NULL) {
+    	if (smscconn_destroy(conn) == -1) {
+    		gwlist_append(l, conn);
+    		gwthread_sleep(2);
+    	}
+    }
+    gwlist_destroy(l, NULL);
+
+    return 0;
 }
 
 

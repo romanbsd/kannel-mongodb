@@ -2081,9 +2081,23 @@ commands never arrive nor can you restart it via WAP anymore.</para>
 
 	<row><entry><literal>restart</literal></entry>
    <entry valign="bottom">
-        Re-start whole bearerbox, hence all SMSC links. Password required.
- 		  Beware that you loose the smsbox connections in such a case.
+        This is the hard restarting version, where we fully stop the
+        bearerbox and then initiate from ground up.
+        Beware that you loose the smsbox connections in such a case.
    </entry></row>
+
+    <row><entry><literal>graceful-restart</literal></entry>
+    <entry valign="bottom">
+        Re-start bearerbox gracefully, hence only the changes in the
+        configuration for the SMSC connections are performed. I.e.
+        an added SMSC group will be start, and a removed SMSC group
+        will be shutdown and destroyed. Any unchanged SMSC connection
+        keeps on running without interruption. Password required.
+        This is the soft restarting version, where we keep all internal
+        parts of the bearebox running, including the smsbox connections.
+        The same graceful restart can be initiated by sending a SIGHUP
+        signal to the bearerbox daemon process.
+    </entry></row>
 
 	<row><entry><literal>log-level</literal></entry>
    <entry valign="bottom">
@@ -10701,9 +10715,12 @@ values:
         to /etc/logrotate.d) is shown below. In this example the Kannel log files found 
         in /var/log/kannel are rotated and compressed daily over 365 days.  See the 
         documentation for logrotate for more details.  Of particular note however is the 
-        postrotate command, this killall -HUP issues a HUP command to each Kannel
-        box running. The HUP signal has the effect of reopening the log file, without this 
-        command Kannel will continue to write to the rotated log file.
+        postrotate command, this killall -HUP issues a SIGHUP signal to each Kannel
+        box process running. The SIGHUP signal has the effect of reopening the log file, 
+        and performing graceful restart of SMSC connections. Without this command Kannel 
+        will continue to write to the rotated log file. Kannel bearerbox can use the 
+        SIGUSR2 to reopen the logs only, without performing the graceful restart. This
+        may be more applicable for logrotate usage. 
         </para>
 
         <screen><userinput>
@@ -10717,7 +10734,7 @@ values:
               create 640 kannel adm
               sharedscripts
               postrotate
-                    killall -HUP bearerbox smsbox wapbox || true > /dev/null 2> /dev/null
+                    killall -USR2 bearerbox && killall -HUP smsbox wapbox || true > /dev/null 2> /dev/null
               endscript
         }
         </userinput></screen>

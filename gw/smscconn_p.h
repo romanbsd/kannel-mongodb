@@ -168,6 +168,8 @@ struct smscconn {
     /* SMSCConn variables set in smscconn.c */
     volatile sig_atomic_t 	is_stopped;
 
+    Octstr *chksum;			/* MD5 hash of the whole configuration */
+    Octstr *chksum_conn;	/* MD5 hash minus the routing configuration */
     Octstr *name;		/* Descriptive name filled from connection info */
     Octstr *id;			/* Abstract name specified in configuration and
 				   used for logging and routing */

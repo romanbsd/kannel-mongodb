@@ -135,8 +135,9 @@ volatile sig_atomic_t bb_status;
  * Flags for main thread to check what is to do.
  */
 enum {
-    BB_LOGREOPEN = 1,
-    BB_CHECKLEAKS = 2
+    BB_GRACEFUL_RESTART = 1,
+    BB_CHECKLEAKS = 2,
+    BB_LOGREOPEN = 3
 };
 /* Here we will set above flags */
 static volatile sig_atomic_t bb_todo = 0;
@@ -191,6 +192,10 @@ static void signal_handler(int signum)
             break;
 
         case SIGHUP:
+            bb_todo |= BB_GRACEFUL_RESTART;
+            break;
+
+        case SIGUSR2:
             bb_todo |= BB_LOGREOPEN;
             break;
 
@@ -216,6 +221,7 @@ static void setup_signal_handlers(void)
     sigaction(SIGQUIT, &act, NULL);
     sigaction(SIGHUP, &act, NULL);
     sigaction(SIGPIPE, &act, NULL);
+    sigaction(SIGUSR2, &act, NULL);
 }
 
 
@@ -755,8 +761,16 @@ int main(int argc, char **argv)
             continue;
         }
 
+        if (bb_todo & BB_GRACEFUL_RESTART) {
+            warning(0, "SIGHUP received, re-opening logs and gracefully restarting.");
+            log_reopen();
+            alog_reopen();
+            bb_graceful_restart();
+            bb_todo = bb_todo & ~BB_GRACEFUL_RESTART;
+        }
+
         if (bb_todo & BB_LOGREOPEN) {
-            warning(0, "SIGHUP received, catching and re-opening logs");
+            warning(0, "SIGUSR2 received, re-opening logs.");
             log_reopen();
             alog_reopen();
             bb_todo = bb_todo & ~BB_LOGREOPEN;
@@ -932,6 +946,11 @@ int bb_restart(void)
 {
     restart = 1;
     return bb_shutdown();
+}
+
+int bb_graceful_restart(void)
+{
+    return smsc2_graceful_restart();
 }
 
 int bb_reload_lists(void)
